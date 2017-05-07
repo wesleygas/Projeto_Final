@@ -8,7 +8,7 @@ Created on Thu May  4 10:51:24 2017
 import pygame
 from pygame.locals import *
 
-class botao_comum():
+class botao_comum:
     
     def __init__(self, janela, pos, imag, l, a):
         janela.blit(pygame.image.load(imag), (pos[0], pos[1]))

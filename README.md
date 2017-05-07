@@ -18,3 +18,5 @@ Para o dia 09/05/2017:
 
 - Problemas e soluções para um jogo local split-screen:
 	http://stackoverflow.com/questions/20403675/how-to-create-a-4-way-split-screen-in-pygame
+- Sprite sources:
+	http://unity3diy.blogspot.com.br/2014/11/Free-Sprites-Download-For-YourGames.html

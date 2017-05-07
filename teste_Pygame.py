@@ -1,15 +1,25 @@
 import pygame
-
 pygame.init()
-Display = pygame.display.set_mode((1280,720))
-pygame.display.set_caption('Boravê')
+#iniciando display-------------------------iniciando display
+
+Display = pygame.display.set_mode((1280,720)) #Tamanho da janela
+pygame.display.set_caption('Boravê') #Nome da janela
+
+
 clock = pygame.time.Clock()
-rodando = True
-while rodando:
+#Funções úteis------------------------------Funções úteis
+	
+def check_quit():
 	for event in pygame.event.get():
 		if event.type == pygame.QUIT:
-			rodando = False
-	print(event)
+			return False
+	
+
+rodando = True
+while rodando:
+	eventos = pygame.event.get()
+	rodando = check_quit()
+	
 
 	pygame.display.update()
 	clock.tick(60)
