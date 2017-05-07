@@ -1,0 +1,24 @@
+Nome da classe:	botao_comum
+
+Parametros dados ao chamar a classe: 1 - especificar a janela que quer mudar
+				     2 - ponta esquerda/cima do botão (vetor posição)
+				     3 - imagem (direttório em string)
+				     4 - largura da imagem (número de pixels)
+				     5 - altura da imagem (número de pixels)
+
+Funções:
+
+	precionadoE: Devolve "True" se o botão for precionado pelo botão esquerdo do mouse
+		parametros: 1 - Tuple posição do mouse
+			    2 - Tuple botões do mouse
+	
+	precionaR: Devolve "True" se o botão for precionado pelo botão de rolamento do mouse
+		parametros: 1 - Tuple posição do mouse
+			    2 - Tuple botões do mouse
+
+	precionaD: Devolve "True" se o botão for precionado pelo botão direito do mouse
+		parametros: 1 - Tuple posição do mouse
+			    2 - Tuple botões do mouse
+
+	em_cima: Devolve "True" se o mouse estiver em cima do botão
+		parametros: 1 - Tuple posição do mouse
