@@ -27,21 +27,40 @@ def vel_carro(rpm,marcha):
 
 #Importando sprites-------------------------Importando Sprites
 roda = pygame.image.load(r'.\Sprites\tire.png')
-back = pygame.image.load('Background - EP_Final.png')	
-back = pygame.transform.scale(back,(1280,720))
+roda = pygame.transform.scale(roda,(80,80))
+background = pygame.image.load('Background - EP_Final.png')
+background = pygame.transform.scale(background,(1280,720))
+background1 = background
+background_size = background.get_size()
+
 rodando = True
+x_bg = 0
+x_bg1 = background_size[0]
 
 
 while rodando:
+	vel = vel_carro(500,5)
+	x_bg -= vel
+	x_bg1 -= vel
 
-	Display.blit(back,(0,0))
+	Display.blit(background,(x_bg,0))
+	Display.blit(background1,(x_bg1,0))
+	if x_bg + background_size[0]  < 0:
+		x_bg = background_size[0]
+	if x_bg1 +  background_size[0]  < 0:
+		x_bg1 = background_size[0]
+
 	for event in pygame.event.get():
 		if event.type == pygame.QUIT:
 			rodando = False
+	
+
+	
 	mouse = pygame.mouse.get_pos()
 	Display.blit(roda,mouse)
-	roda = rot_center(roda,-1)
-	pygame.event.get
+	roda = rot_center(roda,-40)
+	
+
 	pygame.display.update()
 	clock.tick(60)
 
