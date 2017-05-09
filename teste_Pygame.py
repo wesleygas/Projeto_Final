@@ -17,7 +17,9 @@ def rot_center(image, angle):
     rot_rect.center = rot_image.get_rect().center
     rot_image = rot_image.subsurface(rot_rect).copy()
     return rot_image	
-
+def vel_carro(rpm,marcha):
+	gear_ratios = [2.77,1.97,1.53,1,0.75]
+	return (rpm*(1/gear_ratios[marcha-1]))/100
 #def check_quit():
 #	for event in pygame.event.get():
 #		if event.type == pygame.QUIT:
