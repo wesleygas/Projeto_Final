@@ -25,6 +25,22 @@ def rot_center(image, angle):
     rot_rect.center = rot_image.get_rect().center
     rot_image = rot_image.subsurface(rot_rect).copy()
     return rot_image	
+
+def mov_aparente(background, vel, x, xl):
+	background1 = background
+	background_size = background.get_size()
+	x -= vel
+	xl -= vel
+
+	Display.blit(background,(x,0))
+	Display.blit(background1,(xl,0))
+	if x + background_size[0]  < 0:
+		x = background_size[0]
+	if xl +  background_size[0]  < 0:
+		xl = background_size[0]
+	return x,xl
+#Classes ----------------------------------- Classes
+
 class player_car:
 	def __init__(self,roda,chassi):
 		self.roda = roda
@@ -52,7 +68,6 @@ roda = pygame.transform.scale(roda,(80,80))
 CarroAzul = pygame.image.load(r'.\Sprites\carro_azul.png')
 background = pygame.image.load('Background - EP_Final.png')
 background = pygame.transform.scale(background,(1280,720))
-background1 = background
 background_size = background.get_size()
 
 
@@ -68,15 +83,7 @@ carroP.gear = 3
 
 while rodando:
 	vel = carroP.speeder(False)
-	x_bg -= vel
-	x_bg1 -= vel
-
-	Display.blit(background,(x_bg,0))
-	Display.blit(background1,(x_bg1,0))
-	if x_bg + background_size[0]  < 0:
-		x_bg = background_size[0]
-	if x_bg1 +  background_size[0]  < 0:
-		x_bg1 = background_size[0]
+	x_bg, x_bg = mov_aparente(background,vel,x_bg,x_bg1)
 
 	for event in pygame.event.get():
 		if event.type == pygame.QUIT:
