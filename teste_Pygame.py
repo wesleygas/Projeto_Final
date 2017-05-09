@@ -1,5 +1,11 @@
 import pygame
 pygame.init()
+
+#Todo-list:
+#	- Implementar uma função(matemática) para mudar o RPM do carro
+#de modo em que ele tenha as curvas de aceleração
+#	- Transformar as funções em classe
+
 #iniciando display-------------------------iniciando display
 
 Display = pygame.display.set_mode((1280,720)) #Tamanho da janela
@@ -7,6 +13,8 @@ pygame.display.set_caption('Boravê') #Nome da janela
 
 
 clock = pygame.time.Clock()
+
+
 #Funções úteis------------------------------Funções úteis
 
 def rot_center(image, angle):
@@ -17,29 +25,49 @@ def rot_center(image, angle):
     rot_rect.center = rot_image.get_rect().center
     rot_image = rot_image.subsurface(rot_rect).copy()
     return rot_image	
-def vel_carro(rpm,marcha):
-	gear_ratios = [2.77,1.97,1.53,1,0.75]
-	return (rpm*(1/gear_ratios[marcha-1]))/100
-#def check_quit():
-#	for event in pygame.event.get():
-#		if event.type == pygame.QUIT:
-#			return False
+class player_car:
+	def __init__(self,roda,chassi):
+		self.roda = roda
+		self.chassi = chassi
+		self.rpm = 0
+		self.gear = 0
+	def speeder(self,brake):
+		self.gear_ratios = [2.77,1.97,1.53,1,0.75]
+		self.speed = (self.rpm*(1/self.gear_ratios[self.gear-1]))/100	
+		return self.speed
+
+	def gas_pedal(self,espaco,brake): 
+		if espaco and not brake:
+			self.rpm += 5
+		else:
+			self.rpm -= 5
+
+
+
+
 
 #Importando sprites-------------------------Importando Sprites
-roda = pygame.image.load(r'.\Sprites\tire.png')
+roda = pygame.image.load(r'.\Sprites\Tire.png')
 roda = pygame.transform.scale(roda,(80,80))
+CarroAzul = pygame.image.load(r'.\Sprites\carro_azul.png')
 background = pygame.image.load('Background - EP_Final.png')
 background = pygame.transform.scale(background,(1280,720))
 background1 = background
 background_size = background.get_size()
 
+
+#-------------------------------------------------------------#
+
 rodando = True
 x_bg = 0
 x_bg1 = background_size[0]
 
+carroP =  player_car(roda,CarroAzul)
+carroP.rpm = 500
+carroP.gear = 3
 
 while rodando:
-	vel = vel_carro(500,5)
+	vel = carroP.speeder(False)
 	x_bg -= vel
 	x_bg1 -= vel
 
