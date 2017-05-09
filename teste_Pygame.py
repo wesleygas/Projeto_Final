@@ -26,7 +26,7 @@ def rot_center(image, angle):
     rot_image = rot_image.subsurface(rot_rect).copy()
     return rot_image	
 
-def mov_aparente(background, vel, x, xl):
+def mov_aparente(Display,background, vel, x, xl):
 	background1 = background
 	background_size = background.get_size()
 	x -= vel
@@ -58,6 +58,13 @@ class player_car:
 		else:
 			self.rpm -= 5
 
+	def draw(self,display,x_displacement = 0):
+		display.blit(self.chassi,(170+x_displacement,380))
+
+
+
+#pixel 30,84 e 171,84
+#carro 170,380
 
 
 
@@ -83,7 +90,7 @@ carroP.gear = 3
 
 while rodando:
 	vel = carroP.speeder(False)
-	x_bg, x_bg = mov_aparente(background,vel,x_bg,x_bg1)
+	x_bg, x_bg1 = mov_aparente(Display,background,vel,x_bg,x_bg1)
 
 	for event in pygame.event.get():
 		if event.type == pygame.QUIT:
@@ -92,8 +99,10 @@ while rodando:
 
 	
 	mouse = pygame.mouse.get_pos()
+	print(mouse)
+	carroP.draw(Display)
 	Display.blit(roda,mouse)
-	roda = rot_center(roda,-40)
+	roda = rot_center(roda,-60)
 	
 
 	pygame.display.update()
