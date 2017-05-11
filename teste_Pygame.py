@@ -47,7 +47,7 @@ class player_car:
 		self.chassi = chassi
 		self.rpm = 0
 		self.gear = 0
-	def speeder(self,brake):
+	def speeder(self):
 		self.gear_ratios = [2.77,1.97,1.53,1,0.75]
 		self.speed = (self.rpm*(1/self.gear_ratios[self.gear-1]))/100	
 		return self.speed
@@ -59,19 +59,23 @@ class player_car:
 			self.rpm -= 5
 
 	def draw(self,display,x_displacement = 0):
-		display.blit(self.chassi,(170+x_displacement,380))
+		x = 170+x_displacement
+		y = 380
+		display.blit(self.chassi,(x,y))
+		display.blit(self.roda,(x+32,y+84))
+		display.blit(self.roda,(x+173,y+84))
 
 
 
-#pixel 30,84 e 171,84
+#pixel 30,84 e 173,84
 #carro 170,380
-
+#202,464;344,464
 
 
 
 #Importando sprites-------------------------Importando Sprites
-roda = pygame.image.load(r'.\Sprites\Tire.png')
-roda = pygame.transform.scale(roda,(80,80))
+roda = pygame.image.load(r'.\Sprites\Roda011.png')
+
 CarroAzul = pygame.image.load(r'.\Sprites\carro_azul.png')
 background = pygame.image.load('Background - EP_Final.png')
 background = pygame.transform.scale(background,(1280,720))
@@ -85,11 +89,11 @@ x_bg = 0
 x_bg1 = background_size[0]
 
 carroP =  player_car(roda,CarroAzul)
-carroP.rpm = 500
-carroP.gear = 3
+carroP.rpm = 2000
+carroP.gear = 5
 
 while rodando:
-	vel = carroP.speeder(False)
+	vel = carroP.speeder()
 	x_bg, x_bg1 = mov_aparente(Display,background,vel,x_bg,x_bg1)
 
 	for event in pygame.event.get():
@@ -99,10 +103,10 @@ while rodando:
 
 	
 	mouse = pygame.mouse.get_pos()
-	print(mouse)
+	
 	carroP.draw(Display)
 	Display.blit(roda,mouse)
-	roda = rot_center(roda,-60)
+	#roda = rot_center(roda,-80)
 	
 
 	pygame.display.update()
