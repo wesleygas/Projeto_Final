@@ -69,42 +69,47 @@ carroP.gear = 3
 janela = 0
 
 while rodando:
-    if janela == 0:
-        Display.blit(menu,(0,0))
-        play = botao_comum(Display, (350,300), '')
+	mousepos = pygame.mouse.get_pos()
+	mousepres = pygame.mouse.get_pressed()
 
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                rodando = False
-    print(pygame.mouse.get_pos())
-    print (background_size)
+	if janela == 0:
+
+		Display.blit(menu,(0,0))
+		play = botao_comum(Display, (350,300), '.\Sprites\play.png')
+		for event in pygame.event.get():
+			if event.type == pygame.QUIT:
+				rodando = False
+
+			if play.precionadoE(mousepos, mousepres):
+				janela = 1
+
+	if janela == 1:
+
+		vel = carroP.speeder(False)
+		x_bg -= vel
+		x_bg1 -= vel
+
+		Display.blit(background,(x_bg,0))
+		Display.blit(background1,(x_bg1,0))
+
+		if x_bg + background_size[0]  < 0:
+			x_bg = background_size[0]
+		if x_bg1 +  background_size[0]  < 0:
+			x_bg1 = background_size[0]
+
+		for event in pygame.event.get():
+			if event.type == pygame.QUIT:
+				rodando = False
         
 
-    if janela == 1:
-        vel = carroP.speeder(False)
-        x_bg -= vel
-        x_bg1 -= vel
-
-        Display.blit(background,(x_bg,0))
-        Display.blit(background1,(x_bg1,0))
-        if x_bg + background_size[0]  < 0:
-            x_bg = background_size[0]
-        if x_bg1 +  background_size[0]  < 0:
-            x_bg1 = background_size[0]
-
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                rodando = False
         
-
-        
-        mouse = pygame.mouse.get_pos()
-        Display.blit(roda,mouse)
-        roda = rot_center(roda,-40)
+		mouse = pygame.mouse.get_pos()
+		Display.blit(roda,mousepos)
+		roda = rot_center(roda,-40)
     
 
-    pygame.display.update()
-    clock.tick(60)
+	pygame.display.update()
+	clock.tick(60)
 
 pygame.quit()
 quit()
