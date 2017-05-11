@@ -10,12 +10,14 @@ from pygame.locals import *
 
 class botao_comum:
     
-    def __init__(self, janela, pos, imag, l, a):
-        janela.blit(pygame.image.load(imag), (pos[0], pos[1]))
+    def __init__(self, janela, pos, imag):
+        self.ima = pygame.image.load(imag)
+        self.dimen = self.ima.get_size()    
+        janela.blit(self.ima, (pos[0], pos[1]))
         self.ix = pos[0]
-        self.fx = pos[0] + l
+        self.fx = pos[0] + self.ima[0]
         self.iy = pos[1]
-        self.fy = pos[1] + a
+        self.fy = pos[1] + self.ima[1]
 
     def precionadoE(self, mpos, mpres):
         if self.ix < mpos[0] < self.fx and self.iy < mpos[1] < self.fy and mpres[0] == 1:
