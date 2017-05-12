@@ -49,14 +49,21 @@ class player_car:
 		self.gear = 0
 	def speeder(self):
 		self.gear_ratios = [2.77,1.97,1.53,1,0.75]
-		self.speed = (self.rpm*(1/self.gear_ratios[self.gear-1]))/100	
+		if(self.gear == 0):
+			self.speed = 0
+		else:
+			self.speed = (self.rpm*(1/self.gear_ratios[self.gear-1]))/100	
 		return self.speed
 
-	def gas_pedal(self,espaco,brake): 
-		if espaco and not brake:
-			self.rpm += 5
+	def gas_pedal(self,espaco,brake = False): 
+		if not self.gear == 0: 
+			torque = 25/abs(self.gear)
 		else:
-			self.rpm -= 5
+			torque = 0
+		if espaco and not brake:
+			self.rpm += torque
+		elif self.rpm > 0:
+			self.rpm -= torque
 
 	def draw(self,display,x_displacement = 0):
 		x = 170+x_displacement
@@ -85,12 +92,13 @@ background_size = background.get_size()
 #-------------------------------------------------------------#
 
 rodando = True
+acelerando = False
 x_bg = 0
 x_bg1 = background_size[0]
 
 carroP =  player_car(roda,CarroAzul)
-carroP.rpm = 2000
-carroP.gear = 5
+carroP.rpm = 0
+carroP.gear = 0
 
 while rodando:
 	vel = carroP.speeder()
@@ -99,14 +107,27 @@ while rodando:
 	for event in pygame.event.get():
 		if event.type == pygame.QUIT:
 			rodando = False
-	
+		if event.type == pygame.KEYDOWN:
+			if event.key == pygame.K_SPACE:
+				acelerando = True
+			if event.key == pygame.K_UP:
+				if(carroP.gear < 5):
+					carroP.gear += 1
+			if event.key == pygame.K_DOWN:
+				if(carroP.gear > 0):
+					carroP.gear -= 1
+				
+		if event.type == pygame.KEYUP:
+			if event.key == pygame.K_SPACE:
+				acelerando = False
 
 	
+
+	print(carroP.rpm,carroP.gear,vel)
 	mouse = pygame.mouse.get_pos()
-	
+	carroP.gas_pedal(acelerando)
 	carroP.draw(Display)
-	Display.blit(roda,mouse)
-	#roda = rot_center(roda,-80)
+
 	
 
 	pygame.display.update()
