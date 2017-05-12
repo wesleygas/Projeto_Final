@@ -47,19 +47,26 @@ class player_car:
 		self.chassi = chassi
 		self.rpm = 0
 		self.gear = 0
+		self.speed = 0
+
 	def speeder(self):
-		self.gear_ratios = [2.77,1.97,1.53,1,0.75]
-		if(self.gear == 0):
+		self.gear_ratios = [0,0.75,1,1.5,1.9,2.77]
+		if(self.gear == 0 and self.speed > 0):
+			self.speed -= 0.01
+		elif(self.speed < 0):
 			self.speed = 0
 		else:
-			self.speed = (self.rpm*(1/self.gear_ratios[self.gear-1]))/100	
+			self.speed = (self.rpm*self.gear_ratios[self.gear])/100	
+		
 		return self.speed
 
 	def gas_pedal(self,espaco,brake = False): 
-		if not self.gear == 0: 
-			torque = 25/abs(self.gear)
+		if (self.rpm < 0):
+				self.rpm = 0
+		if self.gear == 0: 
+			torque = 5
 		else:
-			torque = 0
+			torque = 25/abs(self.gear)
 		if espaco and not brake:
 			self.rpm += torque
 		elif self.rpm > 0:
@@ -81,6 +88,7 @@ class player_car:
 
 
 #Importando sprites-------------------------Importando Sprites
+
 roda = pygame.image.load(r'.\Sprites\Roda011.png')
 
 CarroAzul = pygame.image.load(r'.\Sprites\carro_azul.png')
@@ -116,7 +124,6 @@ while rodando:
 			if event.key == pygame.K_DOWN:
 				if(carroP.gear > 0):
 					carroP.gear -= 1
-				
 		if event.type == pygame.KEYUP:
 			if event.key == pygame.K_SPACE:
 				acelerando = False
