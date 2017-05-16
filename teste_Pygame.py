@@ -66,7 +66,7 @@ class player_car:
 		if self.gear == 0: 
 			torque = 5
 		else:
-			torque = 25/abs(self.gear)
+			torque = int(25/abs(self.gear))
 		if espaco and not brake:
 			self.rpm += torque
 		elif self.rpm > 0:
@@ -79,7 +79,8 @@ class player_car:
 		display.blit(self.roda,(x+32,y+84))
 		display.blit(self.roda,(x+173,y+84))
 
-
+class other_car: 
+	def __init__
 
 #pixel 30,84 e 173,84
 #carro 170,380
