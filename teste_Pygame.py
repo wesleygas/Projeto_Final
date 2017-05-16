@@ -14,7 +14,6 @@ pygame.display.set_caption('Boravê') #Nome da janela
 
 clock = pygame.time.Clock()
 
-
 #Funções úteis------------------------------Funções úteis
 
 def rot_center(image, angle):
@@ -39,7 +38,12 @@ def mov_aparente(Display,background, vel, x, xl):
 	if xl +  background_size[0]  < 0:
 		xl = background_size[0]
 	return x,xl
-#Classes ----------------------------------- Classes
+
+def ebola(tela, linha, Loc, cor):
+	fonte = pygame.font.Font("freesansbold.ttf",20)
+	texto = fonte.render(linha, True, cor)
+	tela.blit(texto, Loc)
+#Classes ----------------.------------------ Classes
 
 class player_car:
 	def __init__(self,roda,chassi):
@@ -75,9 +79,11 @@ class player_car:
 	def draw(self,display,x_displacement = 0):
 		x = 170+x_displacement
 		y = 380
+		preto = (0,0,0)
 		display.blit(self.chassi,(x,y))
 		display.blit(self.roda,(x+32,y+84))
 		display.blit(self.roda,(x+173,y+84))
+		ebola(display, '{0}'.format(self.gear), (300,300), preto)
 
 
 
@@ -95,7 +101,10 @@ CarroAzul = pygame.image.load(r'.\Sprites\carro_azul.png')
 background = pygame.image.load('Background - EP_Final.png')
 background = pygame.transform.scale(background,(1280,720))
 background_size = background.get_size()
-
+v = pygame.image.load(r'.\Sprites\v.png')
+v = pygame.transform.scale(v,(200,200))
+pv= pygame.image.load(r'.\Sprites\pv.png')
+pv = pygame.transform.scale(pv,(73,25))
 
 #-------------------------------------------------------------#
 
@@ -127,14 +136,14 @@ while rodando:
 		if event.type == pygame.KEYUP:
 			if event.key == pygame.K_SPACE:
 				acelerando = False
-
 	
 
-	print(carroP.rpm,carroP.gear,vel)
+	Display.blit(v,(900,0))
+	Display.blit(pv,(955,135))
 	mouse = pygame.mouse.get_pos()
 	carroP.gas_pedal(acelerando)
 	carroP.draw(Display)
-
+	print(mouse)
 	
 
 	pygame.display.update()
