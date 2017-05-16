@@ -7,12 +7,22 @@ pygame.init()
 #	- Transformar as funções em classe
 
 #iniciando display-------------------------iniciando display
-
-Display = pygame.display.set_mode((1280,720)) #Tamanho da janela
+Display_width = 1280
+Display_height = 720
+Display = pygame.display.set_mode((Display_width,Display_height)) #Tamanho da janela
 pygame.display.set_caption('Boravê') #Nome da janela
-
-
 clock = pygame.time.Clock()
+#Cores------------------------------------Cores
+preto = (0,0,0)
+branco = (255,255,255)
+vermelho = (255,0,0)
+azul = (0,255,0)
+verde = (0,0,255)
+amarelo = (255,0,255)
+
+
+
+
 
 #Funções úteis------------------------------Funções úteis
 
@@ -44,7 +54,7 @@ def mov_aparente(Display,background, vel, x, xl, chegada, dis):
 
 def TextoT(tela, linha, Loc, cor):
 	fonte = pygame.font.Font("DS-DIGI.ttf",20)
-	texto = fonte.render(linha, True, cor)
+	texto = fonte.render(str(linha), True, cor)
 	tela.blit(texto, Loc)
 #Classes ----------------.------------------ Classes
 
@@ -61,6 +71,7 @@ class player_car:
 		self.gear_ratios = [0,0.75,1,1.5,1.9,2.77]
 		if(self.gear == 0 and self.speed > 0):
 			self.speed -= 0.01
+			self.rpm -= 3 
 		elif(self.speed < 0):
 			self.speed = 0
 		else:
@@ -84,16 +95,18 @@ class player_car:
 		x = 170+x_displacement
 		y = 380
 
-		preto = (0,0,0)
-		self.roda = pygame.transform.rotate(self.roda, -30)
+		
+		self.roda = rot_center(self.roda, -30)
 		display.blit(self.chassi,(x,y))
 		display.blit(self.roda,(x+32,y+84))
 		display.blit(self.roda,(x+173,y+84))
-		TextoT(display, '{0}'.format(self.gear), (300,300), preto)
+		TextoT(display,self.gear, (300,300), preto)
 		return x + self.size[0]
-#class other_car: 
-#	def __init__(self,roda,chassi):
-
+class other_car: 
+	def __init__(self,roda,chassi):
+		self.roda = roda
+		self.chassi = chassi
+		self.speed = 0
 
 #pixel 30,84 e 173,84
 #carro 170,380
@@ -104,19 +117,14 @@ class player_car:
 #Importando sprites-------------------------Importando Sprites
 
 roda = pygame.image.load(r'.\Sprites\Roda011.png')
-
 CarroAzul = pygame.image.load(r'.\Sprites\carro_azul.png')
 background = pygame.image.load('Background - EP_Final.png')
-background = pygame.transform.scale(background,(1280,720))
+background = pygame.transform.scale(background,(Display_width,Display_height))
 background_size = background.get_size()
-v = pygame.image.load(r'.\Sprites\v.png')
-v = pygame.transform.scale(v,(200,200))
-pv= pygame.image.load(r'.\Sprites\pv.png')
-pv = pygame.transform.scale(pv,(73,25))
-chegada = pygame.image.load(r'.\Sprites\chegs.png')
+chegada = pygame.image.load(r'.\Sprites\chegada.png')
 #-------------------------------------------------------------#
 
-rodando = True
+
 acelerando = False
 x_bg = 0
 x_bg1 = background_size[0]
@@ -127,6 +135,7 @@ carroP.gear = 0
 dis = 38400
 posicao = 40000
 
+rodando = True
 while rodando:
 	vel = carroP.speeder()
 	x_bg, x_bg1, dis = mov_aparente(Display,background,vel,x_bg,x_bg1,chegada, dis)
@@ -140,16 +149,17 @@ while rodando:
 			if event.key == pygame.K_UP:
 				if(carroP.gear < 5):
 					carroP.gear += 1
+					
 			if event.key == pygame.K_DOWN:
 				if(carroP.gear > 0):
 					carroP.gear -= 1
+					
 		if event.type == pygame.KEYUP:
 			if event.key == pygame.K_SPACE:
 				acelerando = False
 	
 
-	Display.blit(v,(900,0))
-	Display.blit(pv,(955,135))
+	
 	mouse = pygame.mouse.get_pos()
 	carroP.gas_pedal(acelerando)
 	posicao = carroP.draw(Display)
