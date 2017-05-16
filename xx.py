@@ -44,7 +44,7 @@ def mov_aparente(Display,background, vel, x, xl, chegada, dis):
 
 def TextoT(display, linha, Loc, cor):
     fonte = pygame.font.Font("DS-DIGI.ttf",20)
-    texto = fonte.render(linha, True, cor)
+    texto = fonte.render(str(linha), True, cor)
     display.blit(texto, Loc)
 #Classes ----------------.------------------ Classes
 
@@ -55,6 +55,7 @@ class player_car:
         self.rpm = 0
         self.gear = 0
         self.speed = 0
+        self.size = chassi.get_size()
 
     def speeder(self):
         self.gear_ratios = [0,0.75,1,1.5,1.9,2.77]
@@ -125,36 +126,48 @@ carroP.rpm = 0
 carroP.gear = 0
 dis = 38400
 posicao = 40000
-janela = 1
+janela = 0
+preto = (0,0,0)
 #Procedimentos------------------------------------Procedimentos
 
 while rodando:
 
-    vel = carroP.speeder()
-    x_bg, x_bg1,dis = mov_aparente(Display,background,vel,x_bg,x_bg1,chegada, dis)
+    if janela == 0:
+        Display.blit(background,(0,0))
+        TextoT(Display, 'tudo que eu canto', (300,300), preto)
+        for event in pygame.event.get():
+            if event.type == 4:
+                janela = 1
+            if event.type == pygame.QUIT:
+                rodando = False
+            print (event.type)
 
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            rodando = False
-        if event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_SPACE:
-                acelerando = True
-            if event.key == pygame.K_UP:
-                if(carroP.gear < 5):
-                    carroP.gear += 1
-            if event.key == pygame.K_DOWN:
-                if(carroP.gear > 0):
-                    carroP.gear -= 1
-        if event.type == pygame.KEYUP:
-            if event.key == pygame.K_SPACE:
-                acelerando = False
-        
+    if janela == 1:
+        vel = carroP.speeder()
+        x_bg, x_bg1,dis = mov_aparente(Display,background,vel,x_bg,x_bg1,chegada, dis)
 
-        Display.blit(v,(900,0))
-        Display.blit(pv,(955,135))
-        mouse = pygame.mouse.get_pos()
-        carroP.gas_pedal(acelerando)
-        posicao = carroP.draw(Display)
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                rodando = False
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_SPACE:
+                    acelerando = True
+                if event.key == pygame.K_UP:
+                    if(carroP.gear < 5):
+                        carroP.gear += 1
+                if event.key == pygame.K_DOWN:
+                    if(carroP.gear > 0):
+                        carroP.gear -= 1
+            if event.type == pygame.KEYUP:
+                if event.key == pygame.K_SPACE:
+                    acelerando = False
+            
+
+            Display.blit(v,(900,0))
+            Display.blit(pv,(955,135))
+            mouse = pygame.mouse.get_pos()
+            carroP.gas_pedal(acelerando)
+            posicao = carroP.draw(Display)
 
 
     pygame.display.update()
