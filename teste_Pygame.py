@@ -5,6 +5,13 @@ pygame.init()
 #	- Implementar uma função(matemática) para mudar o RPM do carro
 #de modo em que ele tenha as curvas de aceleração
 #	- Transformar as funções em classe
+#Cores------------------------------------------Cores
+preto = (0,0,0)
+branco = (255,255,255)
+azul = (0,255,0)
+vermelho = (255,0,0)
+verde = (0,0,255)
+amarelo = (255,0,255)
 
 #iniciando display-------------------------iniciando display
 
@@ -44,7 +51,7 @@ def mov_aparente(Display,background, vel, x, xl, chegada, dis):
 
 def TextoT(tela, linha, Loc, cor):
 	fonte = pygame.font.Font("DS-DIGI.ttf",20)
-	texto = fonte.render(linha, True, cor)
+	texto = fonte.render(str(linha), True, cor)
 	tela.blit(texto, Loc)
 #Classes ----------------.------------------ Classes
 
@@ -73,6 +80,7 @@ class player_car:
 				self.rpm = 0
 		if self.gear == 0: 
 			torque = 5
+			self.rpm -= 5
 		else:
 			torque = 25/abs(self.gear)
 		if espaco and not brake:
@@ -84,12 +92,12 @@ class player_car:
 		x = 170+x_displacement
 		y = 380
 
-		preto = (0,0,0)
-		self.roda = pygame.transform.rotate(self.roda, -30)
+		
+		self.roda = rot_center(self.roda, -30)
 		display.blit(self.chassi,(x,y))
 		display.blit(self.roda,(x+32,y+84))
 		display.blit(self.roda,(x+173,y+84))
-		TextoT(display, '{0}'.format(self.gear), (300,300), preto)
+		TextoT(display,self.gear, (300,300), preto)
 		return x + self.size[0]
 #class other_car: 
 #	def __init__(self,roda,chassi):
@@ -109,11 +117,8 @@ CarroAzul = pygame.image.load(r'.\Sprites\carro_azul.png')
 background = pygame.image.load('Background - EP_Final.png')
 background = pygame.transform.scale(background,(1280,720))
 background_size = background.get_size()
-v = pygame.image.load(r'.\Sprites\v.png')
-v = pygame.transform.scale(v,(200,200))
-pv= pygame.image.load(r'.\Sprites\pv.png')
-pv = pygame.transform.scale(pv,(73,25))
-chegada = pygame.image.load(r'.\Sprites\chegs.png')
+
+chegada = pygame.image.load(r'.\Sprites\chegada.png')
 #-------------------------------------------------------------#
 
 rodando = True
@@ -148,8 +153,7 @@ while rodando:
 				acelerando = False
 	
 
-	Display.blit(v,(900,0))
-	Display.blit(pv,(955,135))
+	
 	mouse = pygame.mouse.get_pos()
 	carroP.gas_pedal(acelerando)
 	posicao = carroP.draw(Display)
