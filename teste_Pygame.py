@@ -25,22 +25,25 @@ def rot_center(image, angle):
     rot_image = rot_image.subsurface(rot_rect).copy()
     return rot_image	
 
-def mov_aparente(Display,background, vel, x, xl):
+def mov_aparente(Display,background, vel, x, xl, chegada, dis):
 	background1 = background
 	background_size = background.get_size()
 	x -= vel
 	xl -= vel
+	dis -= vel
 
 	Display.blit(background,(x,0))
 	Display.blit(background1,(xl,0))
+	if dis <= background_size[0]:
+		Display.blit(chegada,(dis,0))
 	if x + background_size[0]  < 0:
 		x = background_size[0]
 	if xl +  background_size[0]  < 0:
 		xl = background_size[0]
-	return x,xl
+	return x,xl,dis
 
-def ebola(tela, linha, Loc, cor):
-	fonte = pygame.font.Font("freesansbold.ttf",20)
+def TextoT(tela, linha, Loc, cor):
+	fonte = pygame.font.Font("DS-DIGI.ttf",20)
 	texto = fonte.render(linha, True, cor)
 	tela.blit(texto, Loc)
 #Classes ----------------.------------------ Classes
@@ -52,6 +55,7 @@ class player_car:
 		self.rpm = 0
 		self.gear = 0
 		self.speed = 0
+		self.size = chassi.get_size()
 
 	def speeder(self):
 		self.gear_ratios = [0,0.75,1,1.5,1.9,2.77]
@@ -85,8 +89,8 @@ class player_car:
 		display.blit(self.chassi,(x,y))
 		display.blit(self.roda,(x+32,y+84))
 		display.blit(self.roda,(x+173,y+84))
-		ebola(display, '{0}'.format(self.gear), (300,300), preto)
-
+		TextoT(display, '{0}'.format(self.gear), (300,300), preto)
+		return x + self.size[0]
 #class other_car: 
 #	def __init__(self,roda,chassi):
 
@@ -109,7 +113,7 @@ v = pygame.image.load(r'.\Sprites\v.png')
 v = pygame.transform.scale(v,(200,200))
 pv= pygame.image.load(r'.\Sprites\pv.png')
 pv = pygame.transform.scale(pv,(73,25))
-
+chegada = pygame.image.load(r'.\Sprites\chegs.png')
 #-------------------------------------------------------------#
 
 rodando = True
@@ -120,10 +124,12 @@ x_bg1 = background_size[0]
 carroP =  player_car(roda,CarroAzul)
 carroP.rpm = 0
 carroP.gear = 0
+dis = 38400
+posicao = 40000
 
 while rodando:
 	vel = carroP.speeder()
-	x_bg, x_bg1 = mov_aparente(Display,background,vel,x_bg,x_bg1)
+	x_bg, x_bg1, dis = mov_aparente(Display,background,vel,x_bg,x_bg1,chegada, dis)
 
 	for event in pygame.event.get():
 		if event.type == pygame.QUIT:
@@ -146,8 +152,7 @@ while rodando:
 	Display.blit(pv,(955,135))
 	mouse = pygame.mouse.get_pos()
 	carroP.gas_pedal(acelerando)
-	carroP.draw(Display)
-	print(mouse)
+	posicao = carroP.draw(Display)
 	
 
 	pygame.display.update()

@@ -95,3 +95,5 @@ Sprites/chegs.png
 teste_Pygame.py
 teste_Pygame.py
 teste_Pygame.py
+*.db
+Sprites/Thumbs.db
