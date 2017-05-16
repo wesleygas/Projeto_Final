@@ -1,5 +1,6 @@
 import pygame
 pygame.init()
+from classe_b import botao_comum
 
 #Todo-list:
 #   - Implementar uma função(matemática) para mudar o RPM do carro
@@ -114,12 +115,15 @@ v = pygame.transform.scale(v,(200,200))
 pv= pygame.image.load(r'.\Sprites\pv.png')
 pv = pygame.transform.scale(pv,(73,25))
 chegada = pygame.image.load(r'.\Sprites\chegs.png')
+menu = pygame.image.load('menu.png')
+menu = pygame.transform.scale(menu,(1280,720))
 #-------------------------------------------------------------#
 
 rodando = True
 acelerando = False
 x_bg = 0
 x_bg1 = background_size[0]
+
 
 carroP =  player_car(roda,CarroAzul)
 carroP.rpm = 0
@@ -128,19 +132,25 @@ dis = 38400
 posicao = 40000
 janela = 0
 preto = (0,0,0)
+play = botao_comum(r'.\Sprites\play.png')
+
 #Procedimentos------------------------------------Procedimentos
 
 while rodando:
 
+    mouse = pygame.mouse.get_pos()
+    mouse1 = pygame.mouse.get_pressed()
+
     if janela == 0:
-        Display.blit(background,(0,0))
-        TextoT(Display, 'tudo que eu canto', (300,300), preto)
+        Display.blit(menu,(0,0))
+        play.tela(Display, (460, 340))
+
         for event in pygame.event.get():
-            if event.type == 4:
-                janela = 1
             if event.type == pygame.QUIT:
                 rodando = False
-            print (event.type)
+            if play.pressionadoE(mouse, mouse1):
+                janela = 1
+                print(mouse)
 
     if janela == 1:
         vel = carroP.speeder()
@@ -165,10 +175,8 @@ while rodando:
 
             Display.blit(v,(900,0))
             Display.blit(pv,(955,135))
-            mouse = pygame.mouse.get_pos()
             carroP.gas_pedal(acelerando)
             posicao = carroP.draw(Display)
-
 
     pygame.display.update()
     clock.tick(60)
