@@ -75,12 +75,14 @@ class player_car:
 	def draw(self,display,x_displacement = 0):
 		x = 170+x_displacement
 		y = 380
+		self.roda = pygame.transform.rotate(self.roda, -30)
 		display.blit(self.chassi,(x,y))
 		display.blit(self.roda,(x+32,y+84))
 		display.blit(self.roda,(x+173,y+84))
 
-class other_car: 
-	def __init__
+#class other_car: 
+#	def __init__(self,roda,chassi):
+
 
 #pixel 30,84 e 173,84
 #carro 170,380
