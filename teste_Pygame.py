@@ -1,4 +1,5 @@
 import pygame
+import math
 pygame.init()
 
 #Todo-list:
@@ -14,8 +15,9 @@ verde = (0,0,255)
 amarelo = (255,0,255)
 
 #iniciando display-------------------------iniciando display
-
-Display = pygame.display.set_mode((1280,720)) #Tamanho da janela
+display_width = 1280
+display_heigh = 720
+Display = pygame.display.set_mode((display_width,display_heigh)) #Tamanho da janela
 pygame.display.set_caption('Boravê') #Nome da janela
 
 
@@ -76,13 +78,17 @@ class player_car:
 		return self.speed
 
 	def gas_pedal(self,espaco,brake = False): 
+		if (self.rpm > 4000):
+			self.rpm = 4000
 		if (self.rpm < 0):
-				self.rpm = 0
+			self.rpm = 0
+		
 		if self.gear == 0: 
 			torque = 5
 			self.rpm -= 5
 		else:
 			torque = 25/abs(self.gear)
+		
 		if espaco and not brake:
 			self.rpm += torque
 		elif self.rpm > 0:
@@ -92,16 +98,39 @@ class player_car:
 		x = 170+x_displacement
 		y = 380
 
-		
-		self.roda = rot_center(self.roda, -30)
+		if(self.speed > 0):
+			self.roda = rot_center(self.roda, -30)
 		display.blit(self.chassi,(x,y))
 		display.blit(self.roda,(x+32,y+84))
 		display.blit(self.roda,(x+173,y+84))
 		TextoT(display,self.gear, (300,300), preto)
 		return x + self.size[0]
-#class other_car: 
-#	def __init__(self,roda,chassi):
 
+
+
+
+
+class other_car: 
+	def __init__(self,roda,chassi):
+		self.roda = roda
+		self.chassi = chassi
+		self.speed = 0
+		self.pos = (170,280)
+	
+	def draw(self,display,xi,vel):
+		x = xi
+		y = 280
+		v_adv = 30*math.sin(((dis_total - dis)/dis)*(math.pi/2))
+		
+		print(dis_total, posicao,dis)
+		x += (v_adv - vel)
+		if (x > 0 and x < display_width):
+			if(self.speed > 0):
+				self.roda = rot_center(self.roda, -30)
+			display.blit(self.chassi,(x,y))
+			display.blit(self.roda,(x+32,y+84))
+			display.blit(self.roda,(x+173,y+84))
+		return x
 
 #pixel 30,84 e 173,84
 #carro 170,380
@@ -129,8 +158,13 @@ x_bg1 = background_size[0]
 carroP =  player_car(roda,CarroAzul)
 carroP.rpm = 0
 carroP.gear = 0
-dis = 38400
-posicao = 40000
+
+carroadv = other_car(roda,CarroAzul)
+x = carroadv.pos[0]
+
+dis_total = dis = 38400 #Da linha até a origem 
+
+posicao = 40000 #Da linha ao carro
 
 while rodando:
 	vel = carroP.speeder()
@@ -153,10 +187,12 @@ while rodando:
 				acelerando = False
 	
 
-	
+	#print(vel,carroP.rpm)
 	mouse = pygame.mouse.get_pos()
 	carroP.gas_pedal(acelerando)
+	x = carroadv.draw(Display,x,vel)
 	posicao = carroP.draw(Display)
+	
 	
 
 	pygame.display.update()
