@@ -1,18 +1,13 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Thu May  4 10:51:24 2017
-
-@author: jhona
-"""
-
 import pygame
 from pygame.locals import *
 
 class botao_comum:
     
-    def __init__(self, janela, pos, imag):
+    def __init__(self, imag):
         self.ima = pygame.image.load(imag)
         self.dimen = self.ima.get_size()    
+
+    def tela(self, janela, pos):
         janela.blit(self.ima, (pos[0], pos[1]))
         self.ix = pos[0]
         self.fx = pos[0] + self.dimen[0]
