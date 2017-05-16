@@ -79,12 +79,16 @@ class player_car:
 	def draw(self,display,x_displacement = 0):
 		x = 170+x_displacement
 		y = 380
+
 		preto = (0,0,0)
+		self.roda = pygame.transform.rotate(self.roda, -30)
 		display.blit(self.chassi,(x,y))
 		display.blit(self.roda,(x+32,y+84))
 		display.blit(self.roda,(x+173,y+84))
 		ebola(display, '{0}'.format(self.gear), (300,300), preto)
 
+#class other_car: 
+#	def __init__(self,roda,chassi):
 
 
 #pixel 30,84 e 173,84
