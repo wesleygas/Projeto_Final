@@ -122,7 +122,7 @@ carroP.rpm = 0
 carroP.gear = 0
 dis = 38400
 posicao = 40000
-janela = 1
+janela = 0
 preto = (0,0,0)
 play = botao_comum(r'.\Sprites\play.png')
 tutorial = 0
@@ -164,7 +164,6 @@ while rodando:
 				rodando = False
 			if play.pressionadoE(mouse, mouse1):
 				janela = 1
-				print(mouse)
 
 	if janela == 1:
 		vel = carroP.speeder()
@@ -185,9 +184,12 @@ while rodando:
 			if event.type == pygame.KEYUP:
 				if event.key == pygame.K_SPACE:
 					acelerando = False
-			
+
 		carroP.gas_pedal(acelerando)
 		posicao = carroP.draw(Display, velocimetro)
+		
+		if dis < posicao:
+			janela = 0
 
 	print(mouse)
 	pygame.display.update()
