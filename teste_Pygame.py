@@ -51,10 +51,10 @@ def mov_aparente(Display,background, vel, x, xl, chegada, dis):
 		xl = background_size[0]
 	return x,xl,dis
 
-def TextoT(tela, linha, Loc, cor):
-	fonte = pygame.font.Font("DS-DIGI.ttf",20)
+def TextoT(display, linha, Loc, cor, tam):
+	fonte = pygame.font.Font("DS-DIGI.ttf",tam)
 	texto = fonte.render(str(linha), True, cor)
-	tela.blit(texto, Loc)
+	display.blit(texto, Loc)
 #Classes ----------------.------------------ Classes
 
 class player_car:
@@ -103,7 +103,11 @@ class player_car:
 		display.blit(self.chassi,(x,y))
 		display.blit(self.roda,(x+32,y+84))
 		display.blit(self.roda,(x+173,y+84))
-		TextoT(display,self.gear, (300,300), preto)
+		Display.blit(velocimetro, (0, 0))
+		TextoT(display,'marcha', (30,18), branco, 20)
+		TextoT(display,self.gear, (40,35), branco, 60)
+		TextoT(display,'velocidade', (123,18), branco, 20)
+		TextoT(display,int(self.speed), (130,35), branco, 60)
 		return x + self.size[0]
 
 
@@ -111,18 +115,20 @@ class player_car:
 
 
 class other_car: 
-	def __init__(self,roda,chassi):
+	def __init__(self,roda,chassi, curva_caracteristica= 0):
 		self.roda = roda
 		self.chassi = chassi
 		self.speed = 0
 		self.pos = (170,280)
+		self.curve = curva_caracteristica
 	
-	def draw(self,display,xi,vel):
+	def draw(self,display,xi,vel,ticks):
 		x = xi
 		y = 280
-		v_adv = 30*math.sin(((dis_total - dis)/dis)*(math.pi/2))
-		
-		print(dis_total, posicao,dis)
+		tempo = ticks/60
+		v_adv = 2 + (10*tempo)+ (1.5*tempo)**2 - (0.023*tempo)**3 #V=V0 + at²/2
+		ticks+=1
+		print(x)
 		x += (v_adv - vel)
 		if (x > 0 and x < display_width):
 			if(self.speed > 0):
@@ -130,7 +136,7 @@ class other_car:
 			display.blit(self.chassi,(x,y))
 			display.blit(self.roda,(x+32,y+84))
 			display.blit(self.roda,(x+173,y+84))
-		return x
+		return x,ticks
 
 #pixel 30,84 e 173,84
 #carro 170,380
@@ -146,7 +152,7 @@ CarroAzul = pygame.image.load(r'.\Sprites\carro_azul.png')
 background = pygame.image.load('Background - EP_Final.png')
 background = pygame.transform.scale(background,(1280,720))
 background_size = background.get_size()
-
+velocimetro = pygame.image.load(r'.\Sprites\velocimetro.png')
 chegada = pygame.image.load(r'.\Sprites\chegada.png')
 #-------------------------------------------------------------#
 
@@ -163,7 +169,7 @@ carroadv = other_car(roda,CarroAzul)
 x = carroadv.pos[0]
 
 dis_total = dis = 38400 #Da linha até a origem 
-
+ticks = 0
 posicao = 40000 #Da linha ao carro
 
 while rodando:
@@ -190,7 +196,7 @@ while rodando:
 	#print(vel,carroP.rpm)
 	mouse = pygame.mouse.get_pos()
 	carroP.gas_pedal(acelerando)
-	x = carroadv.draw(Display,x,vel)
+	x,ticks = carroadv.draw(Display,x,vel,ticks)
 	posicao = carroP.draw(Display)
 	
 	
