@@ -41,10 +41,11 @@ def mov_aparente(Display,background, vel, x, xl, chegada, dis):
 		xl = background_size[0]
 	return x,xl,dis
 
-def TextoT(display, linha, Loc, cor):
-	fonte = pygame.font.Font("DS-DIGI.ttf",20)
+def TextoT(display, linha, Loc, cor, tam):
+	fonte = pygame.font.Font("DS-DIGI.ttf",tam)
 	texto = fonte.render(str(linha), True, cor)
 	display.blit(texto, Loc)
+
 #Classes ----------------.------------------ Classes
 
 class player_car:
@@ -79,27 +80,21 @@ class player_car:
 		elif self.rpm > 0:
 			self.rpm -= torque
 
-	def draw(self,display,x_displacement = 0):
+	def draw(self,display, velocimetro, x_displacement = 0):
 		x = 170+x_displacement
 		y = 380
 
-		preto = (0,0,0)
+		preto = (255,255,255)
 		self.roda = rot_center(self.roda, -30)
 		display.blit(self.chassi,(x,y))
 		display.blit(self.roda,(x+32,y+84))
 		display.blit(self.roda,(x+173,y+84))
-		TextoT(display, '{0}'.format(self.gear), (300,300), preto)
+		Display.blit(velocimetro, (0, 0))
+		TextoT(display,'marcha', (30,18), preto, 20)
+		TextoT(display,self.gear, (40,35), preto, 60)
+		TextoT(display,'velocidade', (123,18), preto, 20)
+		TextoT(display,int(self.speed), (130,35), preto, 60)
 		return x + self.size[0]
-
-#class other_car: 
-#   def __init__(self,roda,chassi):
-
-
-#pixel 30,84 e 173,84
-#carro 170,380
-#202,464;344,464
-
-
 
 #Importando sprites-------------------------Importando Sprites
 
@@ -191,9 +186,8 @@ while rodando:
 				if event.key == pygame.K_SPACE:
 					acelerando = False
 			
-		Display.blit(velocimetro, (0, 0))
 		carroP.gas_pedal(acelerando)
-		posicao = carroP.draw(Display)
+		posicao = carroP.draw(Display, velocimetro)
 
 	print(mouse)
 	pygame.display.update()
