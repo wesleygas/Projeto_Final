@@ -86,11 +86,11 @@ class player_car:
         y = 380
 
         preto = (0,0,0)
-        self.roda = pygame.transform.rotate(self.roda, -20)
+        self.roda = rot_center(self.roda, -30)
         display.blit(self.chassi,(x,y))
         display.blit(self.roda,(x+32,y+84))
         display.blit(self.roda,(x+173,y+84))
-        TextoT(display, '{0}'.format(self.gear), (300,300), preto)
+        TextoT(display, self.gear, (300,300), preto)
         return x + self.size[0]
 
 #class other_car: 
@@ -114,7 +114,7 @@ v = pygame.image.load(r'.\Sprites\v.png')
 v = pygame.transform.scale(v,(200,200))
 pv= pygame.image.load(r'.\Sprites\pv.png')
 pv = pygame.transform.scale(pv,(73,25))
-chegada = pygame.image.load(r'.\Sprites\chegs.png')
+chegada = pygame.image.load(r'.\Sprites\chegada.png')
 menu = pygame.image.load('menu.png')
 menu = pygame.transform.scale(menu,(1280,720))
 #-------------------------------------------------------------#
