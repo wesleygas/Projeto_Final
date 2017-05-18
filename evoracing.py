@@ -179,7 +179,6 @@ background_size = background.get_size()
 velocimetro = pygame.image.load(r'.\Sprites\velocimetro.png')
 chegada = pygame.image.load(r'.\Sprites\chegada.png')
 menu = pygame.image.load(r'.\Sprites\main_menu.png')
-menu = pygame.transform.scale(menu,(1280,720))
 
 #-------------------------------------------------------------#
 rodando = True
@@ -188,7 +187,8 @@ x_bg = 0
 x_bg1 = background_size[0]
 tela = 0
 
-play = botao_comum(r'.\Sprites\play.png')
+play = botao_comum(r'.\Sprites\playgame_button.png')
+exit = botao_comum(r'.\Sprites\quit_button.png')
 
 carroP =  player_car(roda,CarroAzul)
 carroP.rpm = 0
@@ -208,13 +208,16 @@ while rodando:
 
 	if tela == 0:
 		Display.blit(menu,(0,0))
-		play.tela(Display, (460, 340))
+		play.tela(Display, (489, 450))
+		exit.tela(Display, (1100, 650))
 
 		for event in pygame.event.get():
 			if event.type == pygame.QUIT:
 				rodando = False
 			if play.pressionadoE(mouse, mouse1):
 				tela = 1
+			if exit.pressionadoE(mouse,mouse1):
+				rodando = False
 
 	if tela == 1:
 
@@ -247,7 +250,6 @@ while rodando:
 			if posicao > x:
 				Display.blit
 
-		#print(vel,carroP.rpm)
 		carroP.gas_pedal(acelerando)
 		x,ticks = carroadv.draw(Display,x,vel,ticks)
 		posicao = carroP.draw(Display)
