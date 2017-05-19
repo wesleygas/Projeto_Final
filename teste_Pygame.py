@@ -126,7 +126,7 @@ class other_car:
 		x = xi
 		y = 280
 		tempo = ticks/60
-		v_adv = 2 + (10*tempo)+ (1*tempo)**2 - (0.3*tempo)**3 #V=V0 + at²/2
+		v_adv = (2 + (10*tempo)+ (1*tempo)**2 - (0.3*tempo)**3) #V=V0 + at²/2
 		self.speed = v_adv
 		ticks+=1
 		x += (v_adv - vel)
@@ -203,7 +203,7 @@ carroP.rpm = 0
 carroP.gear = 0
 
 carroadv = other_car(roda,CarroAzul)
-x = carroadv.pos[0]
+xi = carroadv.pos[0]
 
 dis_total = dis = 38400 #Da linha até a origem 
 ticks = 0
@@ -248,9 +248,14 @@ while rodando:
 				if event.key == pygame.K_SPACE:
 					acelerando = False
 
+		carroP.gas_pedal(acelerando)
+		xi,ticks = carroadv.draw(Display,xi,vel,ticks)
+		posicao = carroP.draw(Display)
+		
+
 		if dis < posicao:
-			tela = 0
-			x = carroadv.pos[0]
+			tela = 0 #Quando a tela mudar para o menu, fazer o seguinte:
+			xi = carroadv.pos[0]
 			carroP.restart()
 			ticks = 0
 			x_bg = 0
@@ -258,12 +263,10 @@ while rodando:
 			dis = 38400
 			posicao = 414
 
-		if posicao > x:
+			if posicao < xi:
 				Display.blit
 
-		carroP.gas_pedal(acelerando)
-		x,ticks = carroadv.draw(Display,x,vel,ticks)
-		posicao = carroP.draw(Display)
+		
 	
 	
 
