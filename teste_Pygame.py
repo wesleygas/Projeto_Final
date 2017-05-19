@@ -108,6 +108,11 @@ class player_car:
 		TextoT(display,'velocidade', (123,18), branco, 20)
 		TextoT(display,int(self.speed), (130,35), branco, 60)
 		return x + self.size[0]
+	def restart(self):
+		self.rpm = 0
+		self.gear = 0
+		self.speed = 0
+		return 0
 
 class other_car: 
 	def __init__(self,roda,chassi, curva_caracteristica= 0):
@@ -121,16 +126,19 @@ class other_car:
 		x = xi
 		y = 280
 		tempo = ticks/60
-		v_adv = 2 + (10*tempo)+ (1.5*tempo)**2 - (0.04*tempo)**3 #V=V0 + at²/2
+		v_adv = 2 + (10*tempo)+ (1*tempo)**2 - (0.3*tempo)**3 #V=V0 + at²/2
+		self.speed = v_adv
 		ticks+=1
 		x += (v_adv - vel)
-		if (x > 0 and x < display_width):
+		if (x > 0 and x < (display_width-180)):
 			if(self.speed > 0):
 				self.roda = rot_center(self.roda, -30)
 			display.blit(self.chassi,(x,y))
 			display.blit(self.roda,(x+32,y+84))
 			display.blit(self.roda,(x+173,y+84))
 		return x,ticks
+
+
 
 class botao_comum:
 	
@@ -179,7 +187,6 @@ background_size = background.get_size()
 velocimetro = pygame.image.load(r'.\Sprites\velocimetro.png')
 chegada = pygame.image.load(r'.\Sprites\chegada.png')
 menu = pygame.image.load(r'.\Sprites\main_menu.png')
-menu = pygame.transform.scale(menu,(1280,720))
 
 #-------------------------------------------------------------#
 rodando = True
@@ -188,7 +195,8 @@ x_bg = 0
 x_bg1 = background_size[0]
 tela = 0
 
-play = botao_comum(r'.\Sprites\play.png')
+play = botao_comum(r'.\Sprites\playgame_button.png')
+exit = botao_comum(r'.\Sprites\quit_button.png')
 
 carroP =  player_car(roda,CarroAzul)
 carroP.rpm = 0
@@ -208,13 +216,16 @@ while rodando:
 
 	if tela == 0:
 		Display.blit(menu,(0,0))
-		play.tela(Display, (460, 340))
+		play.tela(Display, (489, 450))
+		exit.tela(Display, (1100, 650))
 
 		for event in pygame.event.get():
 			if event.type == pygame.QUIT:
 				rodando = False
 			if play.pressionadoE(mouse, mouse1):
 				tela = 1
+			if exit.pressionadoE(mouse,mouse1):
+				rodando = False
 
 	if tela == 1:
 
@@ -239,15 +250,17 @@ while rodando:
 
 		if dis < posicao:
 			tela = 0
+			x = carroadv.pos[0]
+			carroP.restart()
+			ticks = 0
 			x_bg = 0
 			x_bg1 = background_size[0]
 			dis = 38400
 			posicao = 414
 
-			if posicao > x:
+		if posicao > x:
 				Display.blit
 
-		#print(vel,carroP.rpm)
 		carroP.gas_pedal(acelerando)
 		x,ticks = carroadv.draw(Display,x,vel,ticks)
 		posicao = carroP.draw(Display)

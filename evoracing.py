@@ -121,7 +121,7 @@ class other_car:
 		x = xi
 		y = 280
 		tempo = ticks/60
-		v_adv = 2 + (10*tempo)+ (1.5*tempo)**2 - (0.04*tempo)**3 #V=V0 + at²/2
+		v_adv = 2 + (10*tempo)+ (1*tempo)**2 - (0.3*tempo)**3 #V=V0 + at²/2
 		ticks+=1
 		x += (v_adv - vel)
 		if (x > 0 and x < display_width):
@@ -131,6 +131,8 @@ class other_car:
 			display.blit(self.roda,(x+32,y+84))
 			display.blit(self.roda,(x+173,y+84))
 		return x,ticks
+
+
 
 class botao_comum:
 	
@@ -242,6 +244,8 @@ while rodando:
 
 		if dis < posicao:
 			tela = 0
+			x = carroP.restart()
+			ticks = 0
 			x_bg = 0
 			x_bg1 = background_size[0]
 			dis = 38400
