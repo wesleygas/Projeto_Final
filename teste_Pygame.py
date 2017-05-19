@@ -64,6 +64,8 @@ class player_car:
 		self.gear = 0
 		self.speed = 0
 		self.size = chassi.get_size()
+		self.counter = 0
+		self.x_displacement = 0
 
 	def speeder(self):
 		self.gear_ratios = [0,0.75,1,1.5,1.9,2.77]
@@ -93,8 +95,19 @@ class player_car:
 		elif self.rpm > 0:
 			self.rpm -= torque
 
-	def draw(self,display,x_displacement = 0):
-		x = 170+x_displacement
+	def draw(self,display):
+		x_displacement = 0
+		self.counter += 1
+		if self.counter == 1:
+			self.previous_speed = self.speed
+		if self.counter == 2:
+			self.counter = 0
+			self.x_displacement = (self.speed-self.previous_speed)*400
+			print(self.counter,self.x_displacement)
+		if self.x_displacement < 0:
+			self.x_displacement = 0
+		print(self.counter,self.x_displacement)
+		x = 170+self.x_displacement
 		y = 380
 
 		if(self.speed > 0):
@@ -126,7 +139,7 @@ class other_car:
 		x = xi
 		y = 280
 		tempo = ticks/60
-		v_adv = (2 + (10*tempo)+ (1*tempo)**2 - (0.3*tempo)**3) #V=V0 + at²/2
+		v_adv = (2 + (6*tempo)+ (0.2*tempo)**2 - (0.3*tempo)**3) #V=V0 + at²/2
 		self.speed = v_adv
 		ticks+=1
 		x += (v_adv - vel)
@@ -240,9 +253,13 @@ while rodando:
 					acelerando = True
 				if event.key == pygame.K_UP:
 					if(carroP.gear < 5):
+						if not(carroP.gear == 0):
+							carroP.rpm = (carroP.speed/carroP.gear_ratios[carroP.gear+1])*100 #Mantém a relação 
 						carroP.gear += 1
 				if event.key == pygame.K_DOWN:
 					if(carroP.gear > 0):
+						if carroP.gear > 1:
+							carroP.rpm = (carroP.speed/carroP.gear_ratios[carroP.gear-1])*100
 						carroP.gear -= 1
 			if event.type == pygame.KEYUP:
 				if event.key == pygame.K_SPACE:
@@ -251,7 +268,7 @@ while rodando:
 		carroP.gas_pedal(acelerando)
 		xi,ticks = carroadv.draw(Display,xi,vel,ticks)
 		posicao = carroP.draw(Display)
-		
+
 
 		if dis < posicao:
 			tela = 0 #Quando a tela mudar para o menu, fazer o seguinte:
