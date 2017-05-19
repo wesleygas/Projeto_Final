@@ -1,6 +1,7 @@
 import pygame
 import math
 pygame.init()
+import time
 
 #Todo-list:
 #	- Implementar uma função(matemática) para mudar o RPM do carro
@@ -109,6 +110,13 @@ class player_car:
 		TextoT(display,int(self.speed), (130,35), branco, 60)
 		return x + self.size[0]
 
+	def drawStop(self, display):
+		x = 170
+		y = 380
+		display.blit(self.chassi,(x,y))
+		display.blit(self.roda,(x+32,y+84))
+		display.blit(self.roda,(x+173,y+84))
+
 class other_car: 
 	def __init__(self,roda,chassi, curva_caracteristica= 0):
 		self.roda = roda
@@ -131,6 +139,13 @@ class other_car:
 			display.blit(self.roda,(x+32,y+84))
 			display.blit(self.roda,(x+173,y+84))
 		return x,ticks
+
+	def drawStop(self,display):
+		x = 170
+		y = 280
+		display.blit(self.chassi,(x,y))
+		display.blit(self.roda,(x+32,y+84))
+		display.blit(self.roda,(x+173,y+84))
 
 class botao_comum:
 	
@@ -179,6 +194,8 @@ background_size = background.get_size()
 velocimetro = pygame.image.load(r'.\Sprites\velocimetro.png')
 chegada = pygame.image.load(r'.\Sprites\chegada.png')
 menu = pygame.image.load(r'.\Sprites\main_menu.png')
+tela_simples = pygame.image.load(r'.\Sprites\tela_simples.png')
+you_lose = pygame.image.load(r'.\Sprites\you_lose.png')
 
 #-------------------------------------------------------------#
 rodando = True
@@ -201,8 +218,8 @@ dis_total = dis = 38400 #Da linha até a origem
 ticks = 0
 posicao = 414 #Da linha ao carro
 
-
 while rodando:
+
 	mouse = pygame.mouse.get_pos()
 	mouse1 = pygame.mouse.get_pressed()
 
@@ -212,49 +229,88 @@ while rodando:
 		exit.tela(Display, (1100, 650))
 
 		for event in pygame.event.get():
+
 			if event.type == pygame.QUIT:
 				rodando = False
+
 			if play.pressionadoE(mouse, mouse1):
 				tela = 1
+				x_bg = 0
+				x_bg1 = background_size[0]
+				dis = 38400
+				posicao = 414
+				contagem = 3
+				inicio_corrida = 1
+
 			if exit.pressionadoE(mouse,mouse1):
 				rodando = False
 
 	if tela == 1:
 
-		vel = carroP.speeder()
-		x_bg, x_bg1, dis = mov_aparente(Display,background,vel,x_bg,x_bg1,chegada, dis)
+		if inicio_corrida != 0:
 
+			Display.blit(background, (0,0))
+			carroadv.drawStop(Display)
+			carroP.drawStop(Display)
+			TextoT(Display, contagem, (500, 250), preto, 60)
+			time.sleep(1)
+			contagem -= 1
+			if contagem < 0:
+				inicio_corrida = 0
+
+		else:
+			vel = carroP.speeder()
+			x_bg, x_bg1, dis = mov_aparente(Display,background,vel,x_bg,x_bg1,chegada, dis)
+
+			for event in pygame.event.get():
+				if event.type == pygame.QUIT:
+					rodando = False
+				if event.type == pygame.KEYDOWN:
+					if event.key == pygame.K_SPACE:
+						acelerando = True
+					if event.key == pygame.K_UP:
+						if(carroP.gear < 5):
+							carroP.gear += 1
+					if event.key == pygame.K_DOWN:
+						if(carroP.gear > 0):
+							carroP.gear -= 1
+				if event.type == pygame.KEYUP:
+					if event.key == pygame.K_SPACE:
+						acelerando = False
+
+			carroP.gas_pedal(acelerando)
+			x,ticks = carroadv.draw(Display,x,vel,ticks)
+			posicao = carroP.draw(Display)
+
+			if dis < posicao:
+
+				tela = 0
+
+				if posicao < x:
+
+					xmensagem = 500
+					ymensagem = 730
+					mensagem = 1
+
+					while mensagem != 0:
+
+						Display.blit(you_lose, (xmensagem,ymensagem))
+						ymensagem -= 5
+
+						pygame.display.update()
+						clock.tick(60)
+
+						if ymensagem < 0:
+							mensagem = 0
+
+
+	if tela == 2:
+
+		Display.blit(tela_simples, (0,0))
+	
 		for event in pygame.event.get():
 			if event.type == pygame.QUIT:
 				rodando = False
-			if event.type == pygame.KEYDOWN:
-				if event.key == pygame.K_SPACE:
-					acelerando = True
-				if event.key == pygame.K_UP:
-					if(carroP.gear < 5):
-						carroP.gear += 1
-				if event.key == pygame.K_DOWN:
-					if(carroP.gear > 0):
-						carroP.gear -= 1
-			if event.type == pygame.KEYUP:
-				if event.key == pygame.K_SPACE:
-					acelerando = False
-
-		if dis < posicao:
-			tela = 0
-			x_bg = 0
-			x_bg1 = background_size[0]
-			dis = 38400
-			posicao = 414
-
-			if posicao > x:
-				Display.blit
-
-		carroP.gas_pedal(acelerando)
-		x,ticks = carroadv.draw(Display,x,vel,ticks)
-		posicao = carroP.draw(Display)
-	
-	
 
 	pygame.display.update()
 	clock.tick(60)
