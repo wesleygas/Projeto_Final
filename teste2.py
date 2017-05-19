@@ -1,7 +1,7 @@
 import pygame
 import math
-pygame.init()
 import time
+pygame.init()
 
 #Todo-list:
 #	- Implementar uma função(matemática) para mudar o RPM do carro
@@ -95,20 +95,21 @@ class player_car:
 			self.rpm -= torque
 
 	def draw(self,display,x_displacement = 0):
-		x = 170+x_displacement
+		self.x = 170+x_displacement
 		y = 380
 
 		if(self.speed > 0):
 			self.roda = rot_center(self.roda, -30)
-		display.blit(self.chassi,(x,y))
-		display.blit(self.roda,(x+32,y+84))
-		display.blit(self.roda,(x+173,y+84))
+		display.blit(self.chassi,(self.x,y))
+		display.blit(self.roda,(self.x+32,y+84))
+		display.blit(self.roda,(self.x+173,y+84))
 		Display.blit(velocimetro, (0, 0))
 		TextoT(display,'marcha', (30,18), branco, 20)
 		TextoT(display,self.gear, (40,35), branco, 60)
 		TextoT(display,'velocidade', (123,18), branco, 20)
 		TextoT(display,int(self.speed), (130,35), branco, 60)
-		return x + self.size[0]
+		return self.x + self.size[0]
+
 
 	def drawStop(self, display):
 		x = 170
@@ -116,6 +117,20 @@ class player_car:
 		display.blit(self.chassi,(x,y))
 		display.blit(self.roda,(x+32,y+84))
 		display.blit(self.roda,(x+173,y+84))
+
+	def restart(self):
+		self.rpm = 0
+		self.gear = 0
+		self.speed = 0
+		return 0
+
+	def foward(self,display, vel):
+		y = 380
+		display.blit(self.roda,(self.x+32,y+84))
+		display.blit(self.roda,(self.x+173,y+84))
+		display.blit(self.chassi,(self.x,y))
+		self.x += vel
+
 
 class other_car: 
 	def __init__(self,roda,chassi, curva_caracteristica= 0):
@@ -129,7 +144,7 @@ class other_car:
 		x = xi
 		y = 280
 		tempo = ticks/60
-		v_adv = 2 + (10*tempo)+ (1.5*tempo)**2 - (0.04*tempo)**3 #V=V0 + at²/2
+		v_adv = 2 + (10*tempo)+ (1*tempo)**2 - (0.3*tempo)**3 #V=V0 + at²/2
 		ticks+=1
 		x += (v_adv - vel)
 		if (x > 0 and x < display_width):
@@ -194,7 +209,6 @@ background_size = background.get_size()
 velocimetro = pygame.image.load(r'.\Sprites\velocimetro.png')
 chegada = pygame.image.load(r'.\Sprites\chegada.png')
 menu = pygame.image.load(r'.\Sprites\main_menu.png')
-tela_simples = pygame.image.load(r'.\Sprites\tela_simples.png')
 you_lose = pygame.image.load(r'.\Sprites\you_lose.png')
 
 #-------------------------------------------------------------#
@@ -218,8 +232,8 @@ dis_total = dis = 38400 #Da linha até a origem
 ticks = 0
 posicao = 414 #Da linha ao carro
 
-while rodando:
 
+while rodando:
 	mouse = pygame.mouse.get_pos()
 	mouse1 = pygame.mouse.get_pressed()
 
@@ -241,6 +255,8 @@ while rodando:
 				posicao = 414
 				contagem = 3
 				inicio_corrida = 1
+				x = carroP.restart()
+				ticks = 0
 
 			if exit.pressionadoE(mouse,mouse1):
 				rodando = False
@@ -259,6 +275,7 @@ while rodando:
 				inicio_corrida = 0
 
 		else:
+
 			vel = carroP.speeder()
 			x_bg, x_bg1, dis = mov_aparente(Display,background,vel,x_bg,x_bg1,chegada, dis)
 
@@ -281,7 +298,7 @@ while rodando:
 			carroP.gas_pedal(acelerando)
 			x,ticks = carroadv.draw(Display,x,vel,ticks)
 			posicao = carroP.draw(Display)
-
+			
 			if dis < posicao:
 
 				tela = 0
@@ -294,6 +311,8 @@ while rodando:
 
 					while mensagem != 0:
 
+						Display.blit(background, (0,0))
+						carroP.foward(Display,vel)
 						Display.blit(you_lose, (xmensagem,ymensagem))
 						ymensagem -= 5
 
@@ -302,16 +321,7 @@ while rodando:
 
 						if ymensagem < 0:
 							mensagem = 0
-
-
-	if tela == 2:
-
-		Display.blit(tela_simples, (0,0))
 	
-		for event in pygame.event.get():
-			if event.type == pygame.QUIT:
-				rodando = False
-
 	pygame.display.update()
 	clock.tick(60)
 
