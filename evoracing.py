@@ -65,6 +65,8 @@ class player_car:
 		self.gear = 0
 		self.speed = 0
 		self.size = chassi.get_size()
+		self.counter = 0
+		self.x_displacement = 0
 
 	def speeder(self):
 		self.gear_ratios = [0,0.75,1,1.5,1.9,2.77]
@@ -95,21 +97,22 @@ class player_car:
 			self.rpm -= torque
 
 	def draw(self,display,x_displacement = 0):
-		x = 170+x_displacement
+		self.x = 170+x_displacement
 		y = 380
 
 		if(self.speed > 0):
 			self.roda = rot_center(self.roda, -30)
-		display.blit(self.chassi,(x,y))
-		display.blit(self.roda,(x+32,y+84))
-		display.blit(self.roda,(x+173,y+84))
-		Display.blit(velocimetro, (0, 0))
-		TextoT(display,'marcha', (30,18), branco, 20)
-		TextoT(display,self.gear, (40,35), branco, 60)
-		TextoT(display,'velocidade', (123,18), branco, 20)
-		TextoT(display,int(self.speed), (130,35), branco, 60)
-		return x + self.size[0]
-
+		display.blit(self.chassi,(self.x,y))
+		display.blit(self.roda,(self.x+32,y+84))
+		display.blit(self.roda,(self.x+173,y+84))
+		display.blit(rpmv, (120,47))
+		display.blit(rpmc, (150,47))
+		display.blit(velocimetro, (0, 0))
+		TextoT(display,'marcha', (35,18), branco, 20)
+		TextoT(display,self.gear, (45,35), branco, 60)
+		TextoT(display,'velocidade', (333,18), branco, 20)
+		TextoT(display,int(self.speed), (340,35), branco, 60)
+		return self.x + self.size[0]
 
 	def drawStop(self, display):
 		x = 170
@@ -124,6 +127,12 @@ class player_car:
 		self.speed = 0
 		return 0
 
+	def foward(self,display, vel):
+		y = 380
+		display.blit(self.roda,(self.x+32,y+84))
+		display.blit(self.roda,(self.x+173,y+84))
+		display.blit(self.chassi,(self.x,y))
+		self.x += vel
 
 class other_car: 
 	def __init__(self,roda,chassi, curva_caracteristica= 0):
@@ -137,10 +146,11 @@ class other_car:
 		x = xi
 		y = 280
 		tempo = ticks/60
-		v_adv = 2 + (10*tempo)+ (1*tempo)**2 - (0.3*tempo)**3 #V=V0 + at²/2
+		v_adv = (2 + (6*tempo)+ (0.2*tempo)**2 - (0.3*tempo)**3) #V=V0 + at²/2
+		self.speed = v_adv
 		ticks+=1
 		x += (v_adv - vel)
-		if (x > 0 and x < display_width):
+		if (x > 0 and x < (display_width-180)):
 			if(self.speed > 0):
 				self.roda = rot_center(self.roda, -30)
 			display.blit(self.chassi,(x,y))
@@ -203,6 +213,10 @@ velocimetro = pygame.image.load(r'.\Sprites\velocimetro.png')
 chegada = pygame.image.load(r'.\Sprites\chegada.png')
 menu = pygame.image.load(r'.\Sprites\main_menu.png')
 you_lose = pygame.image.load(r'.\Sprites\you_lose.png')
+simples = pygame.image.load(r'.\Sprites\tela_simples.png')
+simples = pygame.transform.scale(simples,(1280,720))
+rpmv = pygame.image.load(r'.\Sprites\velocimetro_back_red.png')
+rpmc = pygame.image.load(r'.\Sprites\velocimetro_background.png')
 
 #-------------------------------------------------------------#
 rodando = True
@@ -213,13 +227,14 @@ tela = 0
 
 play = botao_comum(r'.\Sprites\playgame_button.png')
 exit = botao_comum(r'.\Sprites\quit_button.png')
+bot = botao_comum(r'.\Sprites\ot.png')
 
 carroP =  player_car(roda,CarroAzul)
 carroP.rpm = 0
 carroP.gear = 0
 
 carroadv = other_car(roda,CarroAzul)
-x = carroadv.pos[0]
+xi = carroadv.pos[0]
 
 dis_total = dis = 38400 #Da linha até a origem 
 ticks = 0
@@ -234,6 +249,7 @@ while rodando:
 		Display.blit(menu,(0,0))
 		play.tela(Display, (489, 450))
 		exit.tela(Display, (1100, 650))
+		bot.tela(Display, (489, 600))
 
 		for event in pygame.event.get():
 
@@ -248,11 +264,15 @@ while rodando:
 				posicao = 414
 				contagem = 3
 				inicio_corrida = 1
-				x = carroP.restart()
+				carroP.restart()
 				ticks = 0
+				xi = carroadv.pos[0]
 
 			if exit.pressionadoE(mouse,mouse1):
 				rodando = False
+
+			if bot.pressionadoE(mouse, mouse1):
+				tela = 2
 
 	if tela == 1:
 
@@ -270,7 +290,7 @@ while rodando:
 		else:
 
 			vel = carroP.speeder()
-			x_bg, x_bg1, dis = mov_aparente(Display,background,vel,x_bg,x_bg1,chegada, dis)
+			x_bg, x_bg1, dis = mov_aparente(Display,background,vel,x_bg,x_bg1,chegada,dis)
 
 			for event in pygame.event.get():
 				if event.type == pygame.QUIT:
@@ -280,23 +300,27 @@ while rodando:
 						acelerando = True
 					if event.key == pygame.K_UP:
 						if(carroP.gear < 5):
+							if not(carroP.gear == 0):
+								carroP.rpm = (carroP.speed/carroP.gear_ratios[carroP.gear+1])*100 #Mantém a relação 
 							carroP.gear += 1
 					if event.key == pygame.K_DOWN:
 						if(carroP.gear > 0):
+							if carroP.gear > 1:
+								carroP.rpm = (carroP.speed/carroP.gear_ratios[carroP.gear-1])*100
 							carroP.gear -= 1
 				if event.type == pygame.KEYUP:
 					if event.key == pygame.K_SPACE:
 						acelerando = False
 
 			carroP.gas_pedal(acelerando)
-			x,ticks = carroadv.draw(Display,x,vel,ticks)
+			xi,ticks = carroadv.draw(Display,xi,vel,ticks)
 			posicao = carroP.draw(Display)
 			
 			if dis < posicao:
 
 				tela = 0
 
-				if posicao < x:
+				if posicao < xi:
 
 					xmensagem = 500
 					ymensagem = 730
@@ -304,6 +328,8 @@ while rodando:
 
 					while mensagem != 0:
 
+						Display.blit(background, (0,0))
+						carroP.foward(Display,vel)
 						Display.blit(you_lose, (xmensagem,ymensagem))
 						ymensagem -= 5
 
@@ -312,6 +338,25 @@ while rodando:
 
 						if ymensagem < 0:
 							mensagem = 0
+
+	if tela == 2:
+
+		Display.blit(simples, (0,0))
+		bot.tela(Display, (300,300))
+		play.tela(Display, (600,300))
+		exit.tela(Display, (600,600))
+
+		for event in pygame.event.get():
+			if event.type == pygame.QUIT:
+				rodando = False
+			if bot.pressionadoE(mouse, mouse1):
+				background = pygame.image.load(r'.\Sprites\background_deserto.jpg')
+				background = pygame.transform.scale(background,(1280,720))
+			if play.pressionadoE(mouse,mouse1):
+				background = pygame.image.load('Background - EP_Final.png')
+				background = pygame.transform.scale(background,(1280,720))
+			if exit.pressionadoE(mouse,mouse1):
+				tela = 0
 	
 	pygame.display.update()
 	clock.tick(60)
