@@ -103,11 +103,13 @@ class player_car:
 		display.blit(self.chassi,(self.x,y))
 		display.blit(self.roda,(self.x+32,y+84))
 		display.blit(self.roda,(self.x+173,y+84))
-		Display.blit(velocimetro, (0, 0))
-		TextoT(display,'marcha', (30,18), branco, 20)
-		TextoT(display,self.gear, (40,35), branco, 60)
-		TextoT(display,'velocidade', (123,18), branco, 20)
-		TextoT(display,int(self.speed), (130,35), branco, 60)
+		display.blit(rpmv, (120,47))
+		display.blit(rpmc, (150,47))
+		display.blit(velocimetro, (0, 0))
+		TextoT(display,'marcha', (35,18), branco, 20)
+		TextoT(display,self.gear, (45,35), branco, 60)
+		TextoT(display,'velocidade', (333,18), branco, 20)
+		TextoT(display,int(self.speed), (340,35), branco, 60)
 		return self.x + self.size[0]
 
 
@@ -210,7 +212,10 @@ velocimetro = pygame.image.load(r'.\Sprites\velocimetro.png')
 chegada = pygame.image.load(r'.\Sprites\chegada.png')
 menu = pygame.image.load(r'.\Sprites\main_menu.png')
 you_lose = pygame.image.load(r'.\Sprites\you_lose.png')
-
+simples = pygame.image.load(r'.\Sprites\tela_simples.png')
+simples = pygame.transform.scale(simples,(1280,720))
+rpmv = pygame.image.load(r'.\Sprites\velocimetro_back_red.png')
+rpmc = pygame.image.load(r'.\Sprites\velocimetro_background.png')
 #-------------------------------------------------------------#
 rodando = True
 acelerando = False
@@ -220,6 +225,7 @@ tela = 0
 
 play = botao_comum(r'.\Sprites\playgame_button.png')
 exit = botao_comum(r'.\Sprites\quit_button.png')
+bot = botao_comum(r'.\Sprites\ot.png')
 
 carroP =  player_car(roda,CarroAzul)
 carroP.rpm = 0
@@ -241,6 +247,8 @@ while rodando:
 		Display.blit(menu,(0,0))
 		play.tela(Display, (489, 450))
 		exit.tela(Display, (1100, 650))
+		bot.tela(Display, (489, 600))
+
 
 		for event in pygame.event.get():
 
@@ -260,6 +268,9 @@ while rodando:
 
 			if exit.pressionadoE(mouse,mouse1):
 				rodando = False
+
+			if bot.pressionadoE(mouse, mouse1):
+				tela = 2
 
 	if tela == 1:
 
@@ -322,6 +333,26 @@ while rodando:
 						if ymensagem < 0:
 							mensagem = 0
 	
+	if tela == 2:
+
+		Display.blit(simples, (0,0))
+		bot.tela(Display, (300,300))
+		play.tela(Display, (600,300))
+		exit.tela(Display, (600,600))
+
+		for event in pygame.event.get():
+			if event.type == pygame.QUIT:
+				rodando = False
+			if bot.pressionadoE(mouse, mouse1):
+				background = pygame.image.load(r'.\Sprites\background_deserto.jpg')
+				background = pygame.transform.scale(background,(1280,720))
+			if play.pressionadoE(mouse,mouse1):
+				background = pygame.image.load('Background - EP_Final.png')
+				background = pygame.transform.scale(background,(1280,720))
+			if exit.pressionadoE(mouse,mouse1):
+				tela = 0
+
+
 	pygame.display.update()
 	clock.tick(60)
 
