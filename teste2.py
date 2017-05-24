@@ -19,7 +19,7 @@ amarelo = (255,0,255)
 display_width = 1280
 display_heigh = 720
 Display = pygame.display.set_mode((display_width,display_heigh)) #Tamanho da janela
-pygame.display.set_caption('Boravê') #Nome da janela
+pygame.display.set_caption('Evoracing') #Nome da janela
 clock = pygame.time.Clock()
 
 #Funções úteis------------------------------Funções úteis
@@ -67,6 +67,8 @@ class player_car:
 		self.size = chassi.get_size()
 		self.counter = 0
 		self.x_displacement = 0
+		self.rpmap = 1
+		self.rpmmax = 4000
 
 	def speeder(self):
 		self.gear_ratios = [0,0.75,1,1.5,1.9,2.77]
@@ -80,13 +82,14 @@ class player_car:
 		return self.speed
 
 	def gas_pedal(self,espaco,brake = False): 
-		if (self.rpm > 4000):
-			self.rpm = 4000
+
+		if (self.rpm > self.rpmmax):
+			self.rpm = self.rpmmax
 		if (self.rpm < 0):
 			self.rpm = 0
 		
 		if self.gear == 0: 
-			torque = 5
+			torque = 100
 			self.rpm -= 5
 		else:
 			torque = 25/abs(self.gear)
@@ -95,6 +98,8 @@ class player_car:
 			self.rpm += torque
 		elif self.rpm > 0:
 			self.rpm -= torque
+
+		self.rpmp = (206/self.rpmmax)*self.rpm + 117
 
 	def draw(self,display,x_displacement = 0):
 		self.x = 170+x_displacement
@@ -106,11 +111,12 @@ class player_car:
 		display.blit(self.roda,(self.x+32,y+84))
 		display.blit(self.roda,(self.x+173,y+84))
 		display.blit(rpmv, (120,47))
-		display.blit(rpmc, (150,47))
+		display.blit(rpmc, (226,47))
 		display.blit(velocimetro, (0, 0))
+		display.blit(ponteiro, (self.rpmp,46))		
 		TextoT(display,'marcha', (35,18), branco, 20)
 		TextoT(display,self.gear, (45,35), branco, 60)
-		TextoT(display,'velocidade', (333,18), branco, 20)
+		TextoT(display,'velocidade', (333,18), branco, 20) 
 		TextoT(display,int(self.speed), (340,35), branco, 60)
 		return self.x + self.size[0]
 
@@ -152,7 +158,7 @@ class other_car:
 		x += (v_adv - vel)
 		if (x > 0 and x < (display_width-180)):
 			if(self.speed > 0):
-				self.roda = rot_center(self.roda, -30)
+				self.roda = rot_center(self.roda,-30)
 			display.blit(self.chassi,(x,y))
 			display.blit(self.roda,(x+32,y+84))
 			display.blit(self.roda,(x+173,y+84))
@@ -217,6 +223,7 @@ simples = pygame.image.load(r'.\Sprites\tela_simples.png')
 simples = pygame.transform.scale(simples,(1280,720))
 rpmv = pygame.image.load(r'.\Sprites\velocimetro_back_red.png')
 rpmc = pygame.image.load(r'.\Sprites\velocimetro_background.png')
+ponteiro = pygame.image.load(r'.\Sprites\velocimetro_bar.png')
 
 #-------------------------------------------------------------#
 rodando = True
@@ -298,11 +305,14 @@ while rodando:
 				if event.type == pygame.KEYDOWN:
 					if event.key == pygame.K_SPACE:
 						acelerando = True
+						carroP.rpmap = carroP.rpmmax - carroP.rpm
+						carroP.rpmapp = carroP.rpm
 					if event.key == pygame.K_UP:
 						if(carroP.gear < 5):
 							if not(carroP.gear == 0):
 								carroP.rpm = (carroP.speed/carroP.gear_ratios[carroP.gear+1])*100 #Mantém a relação 
 							carroP.gear += 1
+							
 					if event.key == pygame.K_DOWN:
 						if(carroP.gear > 0):
 							if carroP.gear > 1:
