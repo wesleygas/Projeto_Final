@@ -100,6 +100,18 @@ class player_car:
 			self.rpm -= torque
 
 		self.rpmp = (206/self.rpmmax)*self.rpm + 117
+	def gear_up(self):
+		if(self.gear < 5):
+			if not(self.gear == 0):
+				self.rpm = (self.speed/self.gear_ratios[self.gear+1])*100 #Mantém a relação
+			else:
+				self.rpm = 0 
+			self.gear += 1
+	def gear_down(self):
+		if(self.gear > 0):
+			if self.gear > 1:
+				self.rpm = (self.speed/self.gear_ratios[self.gear-1])*100
+			self.gear -= 1
 
 	def draw(self,display,x_displacement = 0):
 		self.x = 170+x_displacement
@@ -308,16 +320,10 @@ while rodando:
 						carroP.rpmap = carroP.rpmmax - carroP.rpm
 						carroP.rpmapp = carroP.rpm
 					if event.key == pygame.K_UP:
-						if(carroP.gear < 5):
-							if not(carroP.gear == 0):
-								carroP.rpm = (carroP.speed/carroP.gear_ratios[carroP.gear+1])*100 #Mantém a relação 
-							carroP.gear += 1
+						carroP.gear_up()
 							
 					if event.key == pygame.K_DOWN:
-						if(carroP.gear > 0):
-							if carroP.gear > 1:
-								carroP.rpm = (carroP.speed/carroP.gear_ratios[carroP.gear-1])*100
-							carroP.gear -= 1
+						carroP.gear_down()
 				if event.type == pygame.KEYUP:
 					if event.key == pygame.K_SPACE:
 						acelerando = False
