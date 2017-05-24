@@ -89,29 +89,38 @@ class player_car:
 			self.rpm = 0
 		
 		if self.gear == 0: 
-			torque = 100
+			self.torque = 100
 			self.rpm -= 5
-		else:
-			torque = 25/abs(self.gear)
+		#else:
+		#	self.torque = 25/abs(self.gear)
 		
 		if espaco and not brake:
-			self.rpm += torque
+			self.rpm += self.torque
 		elif self.rpm > 0:
-			self.rpm -= torque
+			self.rpm -= self.torque
 
 		self.rpmp = (206/self.rpmmax)*self.rpm + 117
 	def gear_up(self):
 		if(self.gear < 5):
+			rpm_ideal = 3500
+			diferenca = abs(self.rpm - rpm_ideal)
+			
+
 			if not(self.gear == 0):
 				self.rpm = (self.speed/self.gear_ratios[self.gear+1])*100 #Mantém a relação
+				self.torque = 30 *((1/((diferenca/100)+0.3))+0.7)/(self.gear*2)
 			else:
-				self.rpm = 0 
+				self.rpm = 0
+				self.rpm = 30
 			self.gear += 1
+		print(self.torque)
 	def gear_down(self):
 		if(self.gear > 0):
+			self.torque = 25/abs(self.gear)
 			if self.gear > 1:
 				self.rpm = (self.speed/self.gear_ratios[self.gear-1])*100
 			self.gear -= 1
+		print(self.torque)
 
 	def draw(self,display,x_displacement = 0):
 		self.x = 170+x_displacement
