@@ -1,6 +1,7 @@
 import pygame
 import math
 import time
+import json
 pygame.init()
 
 #Todo-list:
@@ -89,12 +90,22 @@ class player_car:
 			torque = 5
 			self.rpm -= 5
 		else:
-			torque = 25/abs(self.gear)
+			torque = 25/2**(self.gear/1.5)
 		
 		if espaco and not brake:
 			self.rpm += torque
 		elif self.rpm > 0:
 			self.rpm -= torque
+	def gear_up(self):
+		if(self.gear < 5):
+			if not(self.gear == 0):
+				self.rpm = (self.speed/self.gear_ratios[self.gear+1])*100 #Mantém a relação 
+			self.gear += 1
+	def gear_down(self):
+		if(self.gear > 0):
+			if self.gear > 1:
+				self.rpm = (self.speed/self.gear_ratios[self.gear-1])*100
+		self.gear -= 1
 
 	def draw(self,display,x_displacement = 0):
 		self.x = 170+x_displacement
@@ -146,7 +157,7 @@ class other_car:
 		x = xi
 		y = 280
 		tempo = ticks/60
-		v_adv = (2 + (6*tempo)+ (0.2*tempo)**2 - (0.3*tempo)**3) #V=V0 + at²/2
+		v_adv = (3 + (7*tempo)+ (0.2*tempo)**2 - (0.25*tempo)**3) #V=V0 + at
 		self.speed = v_adv
 		ticks+=1
 		x += (v_adv - vel)
@@ -241,6 +252,7 @@ ticks = 0
 posicao = 414 #Da linha ao carro
 
 
+
 while rodando:
 	mouse = pygame.mouse.get_pos()
 	mouse1 = pygame.mouse.get_pressed()
@@ -299,15 +311,9 @@ while rodando:
 					if event.key == pygame.K_SPACE:
 						acelerando = True
 					if event.key == pygame.K_UP:
-						if(carroP.gear < 5):
-							if not(carroP.gear == 0):
-								carroP.rpm = (carroP.speed/carroP.gear_ratios[carroP.gear+1])*100 #Mantém a relação 
-							carroP.gear += 1
+						carroP.gear_up()
 					if event.key == pygame.K_DOWN:
-						if(carroP.gear > 0):
-							if carroP.gear > 1:
-								carroP.rpm = (carroP.speed/carroP.gear_ratios[carroP.gear-1])*100
-							carroP.gear -= 1
+						carroP.gear_down()
 				if event.type == pygame.KEYUP:
 					if event.key == pygame.K_SPACE:
 						acelerando = False
