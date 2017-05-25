@@ -194,9 +194,10 @@ class other_car:
 
 class botao_comum:
 	
-	def __init__(self, imag):
+	def __init__(self, imag, shadow):
 		self.ima = pygame.image.load(imag)
 		self.dimen = self.ima.get_size()    
+		self.shadow = pygame.image.load(shadow)
 
 	def tela(self, janela, pos):
 		janela.blit(self.ima, (pos[0], pos[1]))
@@ -229,13 +230,14 @@ class botao_comum:
 		else:
 			return False  
 
+	def sombra(self,display):
+		display.blit(self.shadow, (self.ix,self.iy))
+
 #Importando sprites-------------------------Importando Sprites
 
 roda = pygame.image.load(r'.\Sprites\Roda011.png')
 CarroAzul = pygame.image.load(r'.\Sprites\carro_azul.png')
-background = pygame.image.load('Background - EP_Final.png')
-background = pygame.transform.scale(background,(1280,720))
-background_size = background.get_size()
+
 velocimetro = pygame.image.load(r'.\Sprites\velocimetro.png')
 chegada = pygame.image.load(r'.\Sprites\chegada.png')
 menu = pygame.image.load(r'.\Sprites\main_menu.png')
@@ -246,16 +248,30 @@ rpmv = pygame.image.load(r'.\Sprites\velocimetro_back_red.png')
 rpmc = pygame.image.load(r'.\Sprites\velocimetro_background.png')
 ponteiro = pygame.image.load(r'.\Sprites\velocimetro_bar.png')
 
+#Planos de fundo
+rua_simples = pygame.image.load(r'.\Sprites\Background - EP_Final.png')
+rua_deserto = pygame.image.load(r'.\Sprites\background_deserto.jpg')
+background = pygame.transform.scale(rua_simples,(1280,720))
+background_size = background.get_size()
+
+#Menu
+menutosco = pygame.image.load(r'.\Sprites\main_menu.png')
+menuengrenagem = pygame.image.load(r'.\Sprites\LogoEvo2.png')
+menu = pygame.transform.scale(menuengrenagem,(1280,720))
+
 #-------------------------------------------------------------#
+
+play = botao_comum(r'.\Sprites\playgame_button.png',r'.\Sprites\playgame_button.png')
+exit = botao_comum(r'.\Sprites\quit_button.png',r'.\Sprites\playgame_button.png')
+opçoes = botao_comum(r'.\Sprites\settigns_button.png',r'.\Sprites\settings_button_shadow.png')
+
+#-------------------------------------------------------------#
+
 rodando = True
 acelerando = False
 x_bg = 0
 x_bg1 = background_size[0]
 tela = 0
-
-play = botao_comum(r'.\Sprites\playgame_button.png')
-exit = botao_comum(r'.\Sprites\quit_button.png')
-bot = botao_comum(r'.\Sprites\ot.png')
 
 carroP =  player_car(roda,CarroAzul)
 carroP.rpm = 0
@@ -277,7 +293,10 @@ while rodando:
 		Display.blit(menu,(0,0))
 		play.tela(Display, (489, 450))
 		exit.tela(Display, (1100, 650))
-		bot.tela(Display, (489, 600))
+		opçoes.tela(Display, (489, 600))
+
+		if opçoes.em_cima(mouse):
+			opçoes.sombra(Display)
 
 		for event in pygame.event.get():
 
@@ -299,7 +318,7 @@ while rodando:
 			if exit.pressionadoE(mouse,mouse1):
 				rodando = False
 
-			if bot.pressionadoE(mouse, mouse1):
+			if opçoes.pressionadoE(mouse, mouse1):
 				tela = 2
 
 	if tela == 1:
@@ -375,11 +394,9 @@ while rodando:
 			if event.type == pygame.QUIT:
 				rodando = False
 			if bot.pressionadoE(mouse, mouse1):
-				background = pygame.image.load(r'.\Sprites\background_deserto.jpg')
-				background = pygame.transform.scale(background,(1280,720))
+				background = pygame.transform.scale(rua_deserto,(1280,720))
 			if play.pressionadoE(mouse,mouse1):
-				background = pygame.image.load('Background - EP_Final.png')
-				background = pygame.transform.scale(background,(1280,720))
+				background = pygame.transform.scale(rua_simples,(1280,720))
 			if exit.pressionadoE(mouse,mouse1):
 				tela = 0
 	
