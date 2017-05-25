@@ -89,38 +89,30 @@ class player_car:
 			self.rpm = 0
 		
 		if self.gear == 0: 
-			self.torque = 100
+			torque = 100
 			self.rpm -= 5
-		#else:
-		#	self.torque = 25/abs(self.gear)
+		else:
+			torque = 25/abs(self.gear)
 		
 		if espaco and not brake:
-			self.rpm += self.torque
+			self.rpm += torque
 		elif self.rpm > 0:
-			self.rpm -= self.torque
+			self.rpm -= torque
 
 		self.rpmp = (206/self.rpmmax)*self.rpm + 117
+
 	def gear_up(self):
 		if(self.gear < 5):
-			rpm_ideal = 3500
-			diferenca = abs(self.rpm - rpm_ideal)
-			
-
 			if not(self.gear == 0):
 				self.rpm = (self.speed/self.gear_ratios[self.gear+1])*100 #Mantém a relação
-				self.torque = 30 *((1/((diferenca/100)+0.3))+0.7)/(self.gear*2)
 			else:
-				self.rpm = 0
-				self.rpm = 30
+				self.rpm = 0 
 			self.gear += 1
-		print(self.torque)
 	def gear_down(self):
 		if(self.gear > 0):
-			self.torque = 25/abs(self.gear)
 			if self.gear > 1:
 				self.rpm = (self.speed/self.gear_ratios[self.gear-1])*100
 			self.gear -= 1
-		print(self.torque)
 
 	def draw(self,display,x_displacement = 0):
 		self.x = 170+x_displacement
@@ -233,7 +225,7 @@ class botao_comum:
 
 roda = pygame.image.load(r'.\Sprites\Roda011.png')
 CarroAzul = pygame.image.load(r'.\Sprites\carro_azul.png')
-background = pygame.image.load('Background - EP_Final.png')
+background = pygame.image.load(r'.\Sprites\Background - EP_Final.png')
 background = pygame.transform.scale(background,(1280,720))
 background_size = background.get_size()
 velocimetro = pygame.image.load(r'.\Sprites\velocimetro.png')
@@ -245,6 +237,16 @@ simples = pygame.transform.scale(simples,(1280,720))
 rpmv = pygame.image.load(r'.\Sprites\velocimetro_back_red.png')
 rpmc = pygame.image.load(r'.\Sprites\velocimetro_background.png')
 ponteiro = pygame.image.load(r'.\Sprites\velocimetro_bar.png')
+
+#Background
+rua_comum = pygame.image.load(r'.\Sprites\Background - EP_Final.png')
+rua_deserto = pygame.image.load(r'.\Sprites\background_deserto.jpg')
+background = pygame.transform.scale(rua_comum,(1280,720))
+
+#Menu
+menutosco = pygame.image.load(r'.\Sprites\main_menu.png')
+menu2 = pygame.image.load(r'.\Sprites\LogoEvo2.png')
+menu = pygame.transform.scale(menu2,(1280,720))
 
 #-------------------------------------------------------------#
 rodando = True
@@ -375,13 +377,12 @@ while rodando:
 			if event.type == pygame.QUIT:
 				rodando = False
 			if bot.pressionadoE(mouse, mouse1):
-				background = pygame.image.load(r'.\Sprites\background_deserto.jpg')
-				background = pygame.transform.scale(background,(1280,720))
+				background = pygame.transform.scale(rua_deserto,(1280,720))
 			if play.pressionadoE(mouse,mouse1):
-				background = pygame.image.load('Background - EP_Final.png')
-				background = pygame.transform.scale(background,(1280,720))
+				background = pygame.transform.scale(rua_comum,(1280,720))
 			if exit.pressionadoE(mouse,mouse1):
 				tela = 0
+
 	
 	pygame.display.update()
 	clock.tick(60)
