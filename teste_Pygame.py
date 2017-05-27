@@ -1,5 +1,10 @@
 import pygame
 import math
+<<<<<<< HEAD
+=======
+import time
+import json
+>>>>>>> origin/master
 pygame.init()
 
 #Todo-list:
@@ -90,8 +95,13 @@ class player_car:
 		if self.gear == 0: 
 			self.torque = 100
 			self.rpm -= 5
+<<<<<<< HEAD
 		#else:
 		#	self.torque = 25/abs(self.gear)
+=======
+		else:
+			torque = 25/2**(self.gear/1.5)
+>>>>>>> origin/master
 		
 		if espaco and not brake:
 			self.rpm += self.torque
@@ -106,6 +116,7 @@ class player_car:
 			diferenca = abs(self.rpm - rpm_ideal)
 		
 			if not(self.gear == 0):
+<<<<<<< HEAD
 				if(self.rpm > rpm_ideal):
 					self.rpm = (self.speed/self.gear_ratios[self.gear+1])*100 #Mantém a relação
 					self.torque = 50 *((1/((diferenca/100)+0.3))+0.7)/(self.gear*2)
@@ -115,6 +126,15 @@ class player_car:
 			else:
 				self.rpm = 0
 
+=======
+<<<<<<< HEAD
+				self.rpm = (self.speed/self.gear_ratios[self.gear+1])*100 #Mantém a relação 
+=======
+				self.rpm = (self.speed/self.gear_ratios[self.gear+1])*100 #Mantém a relação
+			else:
+				self.rpm = 0 
+>>>>>>> origin/master
+>>>>>>> origin/master
 			self.gear += 1
 
 	def gear_down(self):
@@ -122,8 +142,16 @@ class player_car:
 			self.torque = 75/abs(self.gear)
 			if self.gear > 1:
 				self.rpm = (self.speed/self.gear_ratios[self.gear-1])*100
+<<<<<<< HEAD
+		self.gear -= 1
+=======
 			self.gear -= 1
+<<<<<<< HEAD
 		print(self.torque)
+=======
+
+>>>>>>> origin/master
+>>>>>>> origin/master
 
 	def draw(self,display,x_displacement = 0):
 		self.x = 170+x_displacement
@@ -176,7 +204,11 @@ class other_car:
 		x = xi
 		y = 280
 		tempo = ticks/60
+<<<<<<< HEAD
 		v_adv = (2 + (6*tempo)+ (0.2*tempo)**2)  #V=V0 + at²/2
+=======
+		v_adv = (3 + (7*tempo)+ (0.2*tempo)**2 - (0.25*tempo)**3) #V=V0 + at
+>>>>>>> origin/master
 		self.speed = v_adv
 		ticks+=1
 		
@@ -310,6 +342,7 @@ xi = carroadv.pos[0]
 dis_total = dis = 38400 #Da linha até a origem 
 ticks = 0
 posicao = 414 #Da linha ao carro
+
 
 
 while rodando:
