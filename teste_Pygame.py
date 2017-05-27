@@ -1,10 +1,5 @@
 import pygame
 import math
-<<<<<<< HEAD
-=======
-import time
-import json
->>>>>>> origin/master
 pygame.init()
 
 #Todo-list:
@@ -95,13 +90,8 @@ class player_car:
 		if self.gear == 0: 
 			self.torque = 100
 			self.rpm -= 5
-<<<<<<< HEAD
 		#else:
 		#	self.torque = 25/abs(self.gear)
-=======
-		else:
-			torque = 25/2**(self.gear/1.5)
->>>>>>> origin/master
 		
 		if espaco and not brake:
 			self.rpm += self.torque
@@ -116,7 +106,6 @@ class player_car:
 			diferenca = abs(self.rpm - rpm_ideal)
 		
 			if not(self.gear == 0):
-<<<<<<< HEAD
 				if(self.rpm > rpm_ideal):
 					self.rpm = (self.speed/self.gear_ratios[self.gear+1])*100 #Mantém a relação
 					self.torque = 50 *((1/((diferenca/100)+0.3))+0.7)/(self.gear*2)
@@ -126,15 +115,6 @@ class player_car:
 			else:
 				self.rpm = 0
 
-=======
-<<<<<<< HEAD
-				self.rpm = (self.speed/self.gear_ratios[self.gear+1])*100 #Mantém a relação 
-=======
-				self.rpm = (self.speed/self.gear_ratios[self.gear+1])*100 #Mantém a relação
-			else:
-				self.rpm = 0 
->>>>>>> origin/master
->>>>>>> origin/master
 			self.gear += 1
 
 	def gear_down(self):
@@ -142,16 +122,8 @@ class player_car:
 			self.torque = 75/abs(self.gear)
 			if self.gear > 1:
 				self.rpm = (self.speed/self.gear_ratios[self.gear-1])*100
-<<<<<<< HEAD
-		self.gear -= 1
-=======
 			self.gear -= 1
-<<<<<<< HEAD
 		print(self.torque)
-=======
-
->>>>>>> origin/master
->>>>>>> origin/master
 
 	def draw(self,display,x_displacement = 0):
 		self.x = 170+x_displacement
@@ -193,22 +165,24 @@ class player_car:
 		self.x += vel
 
 class other_car: 
-	def __init__(self,roda,chassi, curva_caracteristica= 0):
+	def __init__(self,roda,chassi,lista_dificuldades): 
 		self.roda = roda
 		self.chassi = chassi
 		self.speed = 0
 		self.pos = (170,280)
-		self.curve = curva_caracteristica
-	
-	def draw(self,display,xi,vel,ticks):
+		self.curvas = lista_dificuldades
+		
+
+		#Curva característica é uma lista com os coeficientes da função de velocidade Ex: [0.2,6,-2] -> (0.2)*x^2 + 6*x + (-2)*x
+		#A lista de dificuldades é uma lista com curvas características Ex. [[0.2,6,2],[1.2,9,-7],[0.8,0,-1]]
+		#O nível é o nível de dificuldade que a curva representa
+
+
+	def draw(self,display,xi,vel,ticks,lvl):
 		x = xi
 		y = 280
 		tempo = ticks/60
-<<<<<<< HEAD
-		v_adv = (2 + (6*tempo)+ (0.2*tempo)**2)  #V=V0 + at²/2
-=======
-		v_adv = (3 + (7*tempo)+ (0.2*tempo)**2 - (0.25*tempo)**3) #V=V0 + at
->>>>>>> origin/master
+		v_adv = (self.curvas[lvl-1][0] + tempo*self.curvas[lvl-1][1] + (tempo*self.curvas[lvl-1][2])**2 )   #(2 + (6*tempo)+ (0.2*tempo)**2)  #V=V0 + at²/2
 		self.speed = v_adv
 		ticks+=1
 		
@@ -336,13 +310,12 @@ carroP =  player_car(roda,blue_jeep)
 carroP.rpm = 0
 carroP.gear = 0
 
-carroadv = other_car(roda,blue_jeep)
+carroadv = other_car(roda,blue_jeep,[[2,6,0.2],[2,9,0],[2,15,1]])
 xi = carroadv.pos[0]
 
 dis_total = dis = 38400 #Da linha até a origem 
 ticks = 0
 posicao = 414 #Da linha ao carro
-
 
 
 while rodando:
@@ -426,7 +399,7 @@ while rodando:
 						acelerando = False
 
 			carroP.gas_pedal(acelerando)
-			xi,ticks = carroadv.draw(Display,xi,vel,ticks)
+			xi,ticks = carroadv.draw(Display,xi,vel,ticks,3)
 			posicao = carroP.draw(Display)
 			
 			if dis < posicao:
