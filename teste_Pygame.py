@@ -99,13 +99,24 @@ class player_car:
 	def gear_up(self):
 		if(self.gear < 5):
 			if not(self.gear == 0):
+<<<<<<< HEAD
 				self.rpm = (self.speed/self.gear_ratios[self.gear+1])*100 #Mantém a relação 
+=======
+				self.rpm = (self.speed/self.gear_ratios[self.gear+1])*100 #Mantém a relação
+			else:
+				self.rpm = 0 
+>>>>>>> origin/master
 			self.gear += 1
 	def gear_down(self):
 		if(self.gear > 0):
 			if self.gear > 1:
 				self.rpm = (self.speed/self.gear_ratios[self.gear-1])*100
+<<<<<<< HEAD
 		self.gear -= 1
+=======
+			self.gear -= 1
+
+>>>>>>> origin/master
 
 	def draw(self,display,x_displacement = 0):
 		self.x = 170+x_displacement
