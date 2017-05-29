@@ -324,9 +324,6 @@ while inicio:
 	mouse = pygame.mouse.get_pos()
 	mouse1 = pygame.mouse.get_pressed()
 
-	if passo >= 7:
-		Display.blit(menu,(0,0))
-
 	avanco.tela(Display, (display_width/2 - 151, display_heigh/2 - 47))
 	TextoT(Display, 'click', (106 + avanco.ix, 12 + avanco.iy), preto, 41)
 
@@ -351,38 +348,13 @@ while inicio:
 		TextoT(Display, '20 coins', (79 + up.ix, 49 + up.iy), preto, 41)
 
 	elif coins >= 5 and passo == 3:
-		up.tela(Display,(display_width/2 - 151,500))
+		up. tela(Display,(display_width/2 - 151,500))
 		TextoT(Display, 'Play button', (46 + up.ix, 12 + up.iy), preto, 41)
 		TextoT(Display, '5 coins', (89 + up.ix, 49 + up.iy), preto, 41)
 
-	elif coins >= 5 and passo == 4:
-		up.tela(Display,(300, 600))
-		TextoT(Display, 'Settings button', (10 + up.ix, 12 + up.iy), preto, 41)
-		TextoT(Display, '5 coins', (89 + up.ix, 49 + up.iy), preto, 41)
 
-	elif coins >= 5 and passo == 5:
-		up.tela(Display,(690, 600))
-		TextoT(Display, 'Upgrade button', (15 + up.ix, 12 + up.iy), preto, 41)
-		TextoT(Display, '5 coins', (89 + up.ix, 49 + up.iy), preto, 41)
 
-	elif coins >= 5 and passo == 6:
-		up.tela(Display, (display_width/2 - 151, 0))
-		TextoT(Display, 'Menu screen', (45 + up.ix, 12 + up.iy), preto, 41)
-		TextoT(Display, '5 coins', (89 + up.ix, 49 + up.iy), preto, 41)		
 
-	elif coins >= 25 and passo == 7:
-		up.tela(Display, (display_width/2 - 151, display_heigh/2 - 47))
-		TextoT(Display, 'Buttons work', (45 + up.ix, 12 + up.iy), preto, 41)
-		TextoT(Display, '25 coins', (80 + up.ix, 49 + up.iy), preto, 41)			
-
-	if passo >= 4:
-		play.tela(Display, (display_width/2 - 151,500))
-
-	if passo >= 5:
-		opçoes.tela(Display, (300, 600))
-
-	if passo >= 6:
-		upgrade.tela(Display, (690, 600))
 
 	for event in pygame.event.get():
 		if event.type == pygame.QUIT:
@@ -409,30 +381,19 @@ while inicio:
 				elif passo == 3:
 					Display.blit(fundo, (display_width/2 - 151,500))
 					passo = 4
-					coins -= 5
+					coins -= 3
+					personalizacao = 1
 
-				elif passo == 4:
-					Display.blit(fundo, (300, 600))
-					passo = 5
-					coins -= 5
 
-				elif passo == 5:
-					Display.blit(fundo, (690, 600))
-					passo = 6
-					coins -= 5
 
-				elif passo == 6:
-					Display.blit(fundo, (display_width/2 - 151, 0))
-					passo = 7
-					coins -= 5
-
-				elif passo == 7:
-					coins -= 25
-					inicio = False
 
 
 	pygame.display.update()
 	clock.tick(60)
+
+display_width = 1280
+display_heigh = 720
+Display = pygame.display.set_mode((display_width ,display_heigh))
 
 while rodando:
 	mouse = pygame.mouse.get_pos()
