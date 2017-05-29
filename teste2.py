@@ -15,8 +15,8 @@ verde = (0,0,255)
 amarelo = (255,0,255)
 
 #iniciando display-------------------------iniciando display
-display_width = 1280
-display_heigh = 720
+display_width = 302
+display_heigh = 93
 Display = pygame.display.set_mode((display_width,display_heigh)) #Tamanho da janela
 pygame.display.set_caption('Evoracing') #Nome da janela
 clock = pygame.time.Clock()
@@ -268,7 +268,12 @@ blue_jeep = pygame.image.load(r'.\Sprites\carro_azul.png')
 black_suv = pygame.image.load(r'.\Sprites\jip_preto.png')
 carro_vermelho = pygame.image.load(r'.\Sprites\Camaro_vermelho.png')
 
+fundo = pygame.image.load(r'.\Sprites\botões\fundo_botão.png')
+
 #-------------------------------------------------------------#
+
+avanco = botao_comum(r'.\Sprites\botões\botão_incial.png',r'.\Sprites\botões\botão_incial.png')
+up = botao_comum(r'.\Sprites\botões\botão_incial.png',r'.\Sprites\botões\botão_incial.png')
 
 #Menu
 play = botao_comum(r'.\Sprites\botões\set_azul\play_button.png',r'.\Sprites\botões\set_azul\play_button_blue_shadow.png')
@@ -293,6 +298,7 @@ tier_3 = botao_comum(r'.\Sprites\botões\set_rosa\tier_3.png',r'.\Sprites\botõe
 
 
 rodando = True
+inicio = True
 acelerando = False
 x_bg = 0
 x_bg1 = background_size[0]
@@ -307,10 +313,87 @@ carroP.gear = 0
 carroadv = other_car(roda,blue_jeep)
 xi = carroadv.pos[0]
 
+coins = 0  
+passo = 0
 dis_total = dis = 38400 #Da linha até a origem 
 ticks = 0
 posicao = 414 #Da linha ao carro
 
+while inicio:
+
+	mouse = pygame.mouse.get_pos()
+	mouse1 = pygame.mouse.get_pressed()
+
+	avanco.tela(Display, (display_width/2 - 151, display_heigh/2 - 47))
+	TextoT(Display, 'click', (106 + avanco.ix, 12 + avanco.iy), preto, 41)
+
+	if coins != 0:
+		TextoT(Display, 'coins: {0}'.format(coins), (76 + avanco.ix, 49 + avanco.iy), preto, 41)
+
+	if passo == 0 and coins >= 10:
+		Display = pygame.display.set_mode((604,93))
+		up.tela(Display,(303,0))
+		TextoT(Display, 'Big screen', (61 + up.ix, 12 + up.iy), preto, 41)
+		TextoT(Display, '10 coins', (84 + up.ix, 49 + up.iy), preto, 41)
+		passo = 1
+
+	elif coins >= 10 and passo == 1:
+		up.tela(Display,(303,0))
+		TextoT(Display, 'Big screen', (61 + up.ix, 12 + up.iy), preto, 41)
+		TextoT(Display, '10 coins', (84 + up.ix, 49 + up.iy), preto, 41)
+
+	elif coins >= 20 and passo == 2:
+		up.tela(Display,(display_width/2 - 151,590))
+		TextoT(Display, 'Progress bar', (36 + up.ix, 12 + up.iy), preto, 41)
+		TextoT(Display, '20 coins', (79 + up.ix, 49 + up.iy), preto, 41)
+
+	elif coins >= 5 and passo == 3:
+		up. tela(Display,(display_width/2 - 151,500))
+		TextoT(Display, 'Play button', (46 + up.ix, 12 + up.iy), preto, 41)
+		TextoT(Display, '5 coins', (89 + up.ix, 49 + up.iy), preto, 41)
+
+
+
+
+
+	for event in pygame.event.get():
+		if event.type == pygame.QUIT:
+			inicio = False
+			rodando = False
+
+		if avanco.pressionadoE(mouse, mouse1):
+			coins += 1
+
+		if passo != 0:
+			if up.pressionadoE(mouse, mouse1):
+				if passo == 1:
+					display_width = 1280
+					display_heigh = 720
+					Display = pygame.display.set_mode((display_width ,display_heigh))
+					passo = 2
+					coins -= 10
+
+				elif passo == 2:
+					Display.blit(fundo, (display_width/2 - 151,590,))
+					passo = 3
+					coins -= 20
+
+				elif passo == 3:
+					Display.blit(fundo, (display_width/2 - 151,500))
+					passo = 4
+					coins -= 3
+					personalizacao = 1
+
+
+
+
+
+	pygame.display.update()
+	clock.tick(60)
+
+display_width = 1280
+display_heigh = 720
+Display = pygame.display.set_mode((display_width ,display_heigh))
 
 while rodando:
 	mouse = pygame.mouse.get_pos()
@@ -318,7 +401,7 @@ while rodando:
 
 	if tela == 0:
 		Display.blit(menu,(0,0))
-		play.tela(Display, (489, 500))
+		play.tela(Display, (display_width/2 - 151, 500))
 		opçoes.tela(Display, (300, 600))
 		upgrade.tela(Display, (690, 600))
 
@@ -352,8 +435,8 @@ while rodando:
 				tela = 2
 
 	if tela == 1:
-
 		if inicio_corrida != 0:
+
 
 			for event in pygame.event.get():
 				if event.type == pygame.QUIT:
