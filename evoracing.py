@@ -57,7 +57,7 @@ def TextoT(display, linha, Loc, cor, tam):
 #Classes ----------------.------------------ Classes
 
 class player_car:
-	def __init__(self,roda,chassi):
+	def __init__(self,roda,chassi, gear_ratios, rpmmax):
 		self.roda = roda
 		self.chassi = chassi
 		self.rpm = 0
@@ -67,10 +67,10 @@ class player_car:
 		self.counter = 0
 		self.x_displacement = 0
 		self.rpmap = 1
-		self.rpmmax = 4000
+		self.rpmmax = rpmmax
+		self.gear_ratios = gear_ratios
 
 	def speeder(self):
-		self.gear_ratios = [0,0.75,1,1.5,1.9,2.77]
 		if(self.gear == 0 and self.speed > 0):
 			self.speed -= 0.1
 		elif(self.speed < 0):
@@ -96,13 +96,29 @@ class player_car:
 		if espaco and not brake:
 			self.rpm += self.torque
 		elif self.rpm > 0:
-			self.rpm -= self.torque
+			self.rpm -= torque
+
+	def draw(self,display):
+		x_displacement = 0
+		self.counter += 1
+		if self.counter == 1:
+			self.previous_speed = self.speed
+		if self.counter == 2:
+			self.counter = 0
+			self.x_displacement = (self.speed-self.previous_speed)*400
+			
+		if self.x_displacement < 0:
+			self.x_displacement = 0
+		
+		x = 170+self.x_displacement
+
+		self.rpm -= self.torque
 
 		self.rpmp = (206/self.rpmmax)*self.rpm + 117
 
 	def gear_up(self):
 		if(self.gear < 5):
-			rpm_ideal = 3500
+			rpm_ideal = 3500 
 			diferenca = abs(self.rpm - rpm_ideal)
 		
 			if not(self.gear == 0):
@@ -157,6 +173,79 @@ class player_car:
 		self.speed = 0
 		return 0
 
+
+class player2_car:
+	def __init__(self,roda,chassi):
+		self.roda = roda
+		self.chassi = chassi
+		self.rpm = 0
+		self.gear = 0
+		self.speed = 0
+		self.size = chassi.get_size()
+		self.counter = 0
+		self.x_displacement = 0
+
+	def speeder(self):
+		self.gear_ratios = [0,0.75,1,1.5,1.9,2.77]
+		if(self.gear == 0 and self.speed > 0):
+			self.speed -= 0.01
+		elif(self.speed < 0):
+			self.speed = 0
+		else:
+			self.speed = (self.rpm*self.gear_ratios[self.gear])/100	
+		
+		return self.speed
+
+	def gas_pedal(self,espaco,brake = False): 
+		if (self.rpm > 4000):
+			self.rpm = 4000
+		if (self.rpm < 0):
+			self.rpm = 0
+		
+		if self.gear == 0: 
+			torque = 5
+			self.rpm -= 5
+		else:
+			torque = 25/abs(self.gear)
+		
+		if espaco and not brake:
+			self.rpm += torque
+		elif self.rpm > 0:
+			self.rpm -= torque
+
+	def draw(self,display):
+		x_displacement = 0
+		self.counter += 1
+		if self.counter == 1:
+			self.previous_speed = self.speed
+		if self.counter == 2:
+			self.counter = 0
+			self.x_displacement = (self.speed-self.previous_speed)*400
+			
+		if self.x_displacement < 0:
+			self.x_displacement = 0
+		
+		x = 170+self.x_displacement
+		y = 250
+
+		if(self.speed > 0):
+			self.roda = rot_center(self.roda, -30)
+		display.blit(self.chassi,(x,y))
+		display.blit(self.roda,(x+32,y+84))
+		display.blit(self.roda,(x+173,y+84))
+		Display.blit(velocimetro, (0, 0))
+		TextoT(display,'marcha', (30,18), branco, 20)
+		TextoT(display,self.gear, (40,35), branco, 60)
+		TextoT(display,'velocidade', (123,18), branco, 20)
+		TextoT(display,int(self.speed), (130,35), branco, 60)
+		return x + self.size[0]
+	def restart(self):
+		self.rpm = 0
+		self.gear = 0
+		self.speed = 0
+		return 0
+
+
 	def foward(self,display, vel):
 		y = 380
 		display.blit(self.roda,(self.x+32,y+84))
@@ -164,19 +253,26 @@ class player_car:
 		display.blit(self.chassi,(self.x,y))
 		self.x += vel
 
+
 class other_car: 
-	def __init__(self,roda,chassi, curva_caracteristica= 0):
+	def __init__(self,roda,chassi,lista_dificuldades): 
 		self.roda = roda
 		self.chassi = chassi
 		self.speed = 0
 		self.pos = (170,280)
-		self.curve = curva_caracteristica
-	
-	def draw(self,display,xi,vel,ticks):
+		self.curvas = lista_dificuldades
+		
+
+		#Curva característica é uma lista com os coeficientes da função de velocidade Ex: [0.2,6,-2] -> (0.2)*x^2 + 6*x + (-2)*x
+		#A lista de dificuldades é uma lista com curvas características Ex. [[0.2,6,2],[1.2,9,-7],[0.8,0,-1]]
+		#O nível é o nível de dificuldade que a curva representa
+
+
+	def draw(self,display,xi,vel,ticks,lvl):
 		x = xi
-		y = 280
+		y = 250
 		tempo = ticks/60
-		v_adv = (2 + (6*tempo)+ (0.2*tempo)**2)  #V=V0 + at²/2
+		v_adv = (self.curvas[lvl-1][0] + tempo*self.curvas[lvl-1][1] + (tempo*self.curvas[lvl-1][2])**2 )   #(2 + (6*tempo)+ (0.2*tempo)**2)  #V=V0 + at²/2
 		self.speed = v_adv
 		ticks+=1
 		
@@ -252,7 +348,7 @@ rpmv = pygame.image.load(r'.\Sprites\velocimetro_back_red.png')
 rpmc = pygame.image.load(r'.\Sprites\velocimetro_background.png')
 ponteiro = pygame.image.load(r'.\Sprites\velocimetro_bar.png')
 
-#Planos de fundo
+#----Planos de fundo
 street = pygame.image.load(r'.\Sprites\Background - EP_Final.png')
 desert = pygame.image.load(r'.\Sprites\background_deserto.jpg')
 background = street
@@ -263,10 +359,14 @@ menu = menu_engrenagem
 tela_engrenagem = pygame.image.load(r'.\Sprites\menus\store_background_2.png')
 plano = tela_engrenagem    
 
-#Carros
+#-----Carros
 blue_jeep = pygame.image.load(r'.\Sprites\carro_azul.png')
 black_suv = pygame.image.load(r'.\Sprites\jip_preto.png')
 carro_vermelho = pygame.image.load(r'.\Sprites\Camaro_vermelho.png')
+
+#-----Musicas
+
+pygame.mixer.music.load(r'top_gear.wav') #Central theme
 
 #-------------------------------------------------------------#
 
@@ -300,23 +400,26 @@ tela = 0
 rola = 0
 tier = 0
 
-carroP =  player_car(roda,blue_jeep)
+carroP =  player_car(roda,blue_jeep,[0,0.75,1,1.5,1.9,2.77],4000)
 carroP.rpm = 0
 carroP.gear = 0
 
-carroadv = other_car(roda,blue_jeep)
+carroadv = other_car(roda,blue_jeep,[[2,6,0.2],[2,9,0],[2,15,1]])
 xi = carroadv.pos[0]
 
 dis_total = dis = 38400 #Da linha até a origem 
 ticks = 0
 posicao = 414 #Da linha ao carro
-
+musica_on = False
 
 while rodando:
 	mouse = pygame.mouse.get_pos()
 	mouse1 = pygame.mouse.get_pressed()
 
 	if tela == 0:
+		if not musica_on:
+			pygame.mixer.music.play(-1)
+			musica_on = True
 		Display.blit(menu,(0,0))
 		play.tela(Display, (489, 500))
 		opçoes.tela(Display, (300, 600))
@@ -352,7 +455,8 @@ while rodando:
 				tela = 2
 
 	if tela == 1:
-
+		pygame.mixer.music.stop()
+		musica_on = False
 		if inicio_corrida != 0:
 
 			for event in pygame.event.get():
@@ -393,7 +497,7 @@ while rodando:
 						acelerando = False
 
 			carroP.gas_pedal(acelerando)
-			xi,ticks = carroadv.draw(Display,xi,vel,ticks)
+			xi,ticks = carroadv.draw(Display,xi,vel,ticks,2)
 			posicao = carroP.draw(Display)
 			
 			if dis < posicao:
@@ -420,7 +524,9 @@ while rodando:
 							mensagem = 0
 
 	if tela == 2:
-
+		if not musica_on:
+			pygame.mixer.music.play(-1)
+			musica_on = True
 		Display.blit(plano, (0,0))
 
 		if tier == 0:

@@ -112,7 +112,7 @@ class player_car:
 		
 		x = 170+self.x_displacement
 
-			self.rpm -= self.torque
+		self.rpm -= self.torque
 
 		self.rpmp = (206/self.rpmmax)*self.rpm + 117
 
