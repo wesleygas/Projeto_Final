@@ -103,10 +103,10 @@ class player_car:
 		if self.counter == 2:
 			self.counter = 0
 			self.x_displacement = (self.speed-self.previous_speed)*400
-			print(self.counter,self.x_displacement)
+			
 		if self.x_displacement < 0:
 			self.x_displacement = 0
-		print(self.counter,self.x_displacement)
+		
 		x = 170+self.x_displacement
 		y = 380
 
@@ -127,6 +127,80 @@ class player_car:
 		self.speed = 0
 		return 0
 
+
+
+class player2_car:
+	def __init__(self,roda,chassi):
+		self.roda = roda
+		self.chassi = chassi
+		self.rpm = 0
+		self.gear = 0
+		self.speed = 0
+		self.size = chassi.get_size()
+		self.counter = 0
+		self.x_displacement = 0
+
+	def speeder(self):
+		self.gear_ratios = [0,0.75,1,1.5,1.9,2.77]
+		if(self.gear == 0 and self.speed > 0):
+			self.speed -= 0.01
+		elif(self.speed < 0):
+			self.speed = 0
+		else:
+			self.speed = (self.rpm*self.gear_ratios[self.gear])/100	
+		
+		return self.speed
+
+	def gas_pedal(self,espaco,brake = False): 
+		if (self.rpm > 4000):
+			self.rpm = 4000
+		if (self.rpm < 0):
+			self.rpm = 0
+		
+		if self.gear == 0: 
+			torque = 5
+			self.rpm -= 5
+		else:
+			torque = 25/abs(self.gear)
+		
+		if espaco and not brake:
+			self.rpm += torque
+		elif self.rpm > 0:
+			self.rpm -= torque
+
+	def draw(self,display):
+		x_displacement = 0
+		self.counter += 1
+		if self.counter == 1:
+			self.previous_speed = self.speed
+		if self.counter == 2:
+			self.counter = 0
+			self.x_displacement = (self.speed-self.previous_speed)*400
+			
+		if self.x_displacement < 0:
+			self.x_displacement = 0
+		
+		x = 170+self.x_displacement
+		y = 250
+
+		if(self.speed > 0):
+			self.roda = rot_center(self.roda, -30)
+		display.blit(self.chassi,(x,y))
+		display.blit(self.roda,(x+32,y+84))
+		display.blit(self.roda,(x+173,y+84))
+		Display.blit(velocimetro, (0, 0))
+		TextoT(display,'marcha', (30,18), branco, 20)
+		TextoT(display,self.gear, (40,35), branco, 60)
+		TextoT(display,'velocidade', (123,18), branco, 20)
+		TextoT(display,int(self.speed), (130,35), branco, 60)
+		return x + self.size[0]
+	def restart(self):
+		self.rpm = 0
+		self.gear = 0
+		self.speed = 0
+		return 0
+
+
 class other_car: 
 	def __init__(self,roda,chassi, curva_caracteristica= 0):
 		self.roda = roda
@@ -137,7 +211,7 @@ class other_car:
 	
 	def draw(self,display,xi,vel,ticks):
 		x = xi
-		y = 280
+		y = 250
 		tempo = ticks/60
 		v_adv = (2 + (6*tempo)+ (0.2*tempo)**2 - (0.3*tempo)**3) #V=V0 + at²/2
 		self.speed = v_adv

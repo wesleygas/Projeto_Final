@@ -99,3 +99,8 @@ teste_Pygame.py
 Sprites/Thumbs.db
 Sprites/pv.png
 *.png
+*.wav
+*.ogg
+Sounds/boost.7z
+*.db
+Sprites/Keyboard keys.psd
