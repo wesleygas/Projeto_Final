@@ -171,7 +171,7 @@ class other_car:
 		self.speed = 0
 		self.pos = (170,280)
 		self.curve = curva_caracteristica
-	
+
 	def draw(self,display,xi,vel,ticks):
 		x = xi
 		y = 280
@@ -245,12 +245,16 @@ roda = pygame.image.load(r'.\Sprites\Roda011.png')
 velocimetro = pygame.image.load(r'.\Sprites\velocimetro.png')
 chegada = pygame.image.load(r'.\Sprites\chegada.png')
 menu = pygame.image.load(r'.\Sprites\main_menu.png')
-you_lose = pygame.image.load(r'.\Sprites\you_lose.png')
+you_lose = pygame.image.load(r'.\Sprites\you_lose_2.png')
 simples = pygame.image.load(r'.\Sprites\tela_simples.png')
 simples = pygame.transform.scale(simples,(1280,720))
 rpmv = pygame.image.load(r'.\Sprites\velocimetro_back_red.png')
 rpmc = pygame.image.load(r'.\Sprites\velocimetro_background.png')
 ponteiro = pygame.image.load(r'.\Sprites\velocimetro_bar.png')
+
+#Ganhar ou perder
+you_lose = pygame.image.load(r'.\Sprites\you_lose_2.png')
+you_win = pygame.image.load(r'.\Sprites\you_win_2.png')
 
 #Planos de fundo
 street = pygame.image.load(r'.\Sprites\Background - EP_Final.png')
@@ -259,14 +263,16 @@ background = street
 background_size = background.get_size()
 menutosco = pygame.image.load(r'.\Sprites\main_menu.png')
 menu_engrenagem = pygame.image.load(r'.\Sprites\menus\menu principal\LogoEvo2.png')
-menu = menu_engrenagem
+menu = menutosco
 tela_engrenagem = pygame.image.load(r'.\Sprites\menus\store_background_2.png')
 plano = tela_engrenagem    
 
 #Carros
 blue_jeep = pygame.image.load(r'.\Sprites\carro_azul.png')
 black_suv = pygame.image.load(r'.\Sprites\jip_preto.png')
+blue_rally_jeep = pygame.image.load(r'.\Sprites\blue_rally_jeep.png')
 carro_vermelho = pygame.image.load(r'.\Sprites\Camaro_vermelho.png')
+
 
 fundo = pygame.image.load(r'.\Sprites\botões\fundo_botão.png')
 
@@ -298,7 +304,7 @@ tier_3 = botao_comum(r'.\Sprites\botões\set_rosa\tier_3.png',r'.\Sprites\botõe
 
 
 rodando = True
-inicio = True
+inicio = False
 acelerando = False
 x_bg = 0
 x_bg1 = background_size[0]
@@ -306,7 +312,7 @@ tela = 0
 rola = 0
 tier = 0
 
-carroP =  player_car(roda,blue_jeep)
+carroP =  player_car(roda,blue_rally_jeep)
 carroP.rpm = 0
 carroP.gear = 0
 
@@ -434,6 +440,10 @@ while inicio:
 	pygame.display.update()
 	clock.tick(60)
 
+display_width = 1280
+display_heigh = 720
+Display = pygame.display.set_mode((display_width ,display_heigh))
+
 while rodando:
 	mouse = pygame.mouse.get_pos()
 	mouse1 = pygame.mouse.get_pressed()
@@ -540,6 +550,26 @@ while rodando:
 
 						if ymensagem < 0:
 							mensagem = 0
+
+				else:
+
+					xmensagem = 500
+					ymensagem = 730
+					mensagem = 1
+
+					while mensagem != 0:
+
+						Display.blit(background, (0,0))
+						carroP.foward(Display,vel)
+						Display.blit(you_win, (xmensagem,ymensagem))
+						ymensagem -= 5
+
+						pygame.display.update()
+						clock.tick(60)
+
+						if ymensagem < 0:
+							mensagem = 0
+
 
 	if tela == 2:
 
