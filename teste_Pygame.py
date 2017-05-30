@@ -366,7 +366,7 @@ carro_vermelho = pygame.image.load(r'.\Sprites\Camaro_vermelho.png')
 
 #-----Musicas
 
-pygame.mixer.music.load(r'top_gear.wav') #Central theme
+pygame.mixer.music.load(r'.\Sounds\top_gear.mp3') #Central theme
 
 #-------------------------------------------------------------#
 
