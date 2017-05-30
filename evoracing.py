@@ -15,8 +15,8 @@ verde = (0,0,255)
 amarelo = (255,0,255)
 
 #iniciando display-------------------------iniciando display
-display_width = 1280
-display_heigh = 720
+display_width = 302
+display_heigh = 93
 Display = pygame.display.set_mode((display_width,display_heigh)) #Tamanho da janela
 pygame.display.set_caption('Evoracing') #Nome da janela
 clock = pygame.time.Clock()
@@ -57,7 +57,7 @@ def TextoT(display, linha, Loc, cor, tam):
 #Classes ----------------.------------------ Classes
 
 class player_car:
-	def __init__(self,roda,chassi, gear_ratios, rpmmax):
+	def __init__(self,roda,chassi):
 		self.roda = roda
 		self.chassi = chassi
 		self.rpm = 0
@@ -67,10 +67,10 @@ class player_car:
 		self.counter = 0
 		self.x_displacement = 0
 		self.rpmap = 1
-		self.rpmmax = rpmmax
-		self.gear_ratios = gear_ratios
+		self.rpmmax = 4000
 
 	def speeder(self):
+		self.gear_ratios = [0,0.75,1,1.5,1.9,2.77]
 		if(self.gear == 0 and self.speed > 0):
 			self.speed -= 0.1
 		elif(self.speed < 0):
@@ -96,29 +96,13 @@ class player_car:
 		if espaco and not brake:
 			self.rpm += self.torque
 		elif self.rpm > 0:
-			self.rpm -= torque
-
-	def draw(self,display):
-		x_displacement = 0
-		self.counter += 1
-		if self.counter == 1:
-			self.previous_speed = self.speed
-		if self.counter == 2:
-			self.counter = 0
-			self.x_displacement = (self.speed-self.previous_speed)*400
-			
-		if self.x_displacement < 0:
-			self.x_displacement = 0
-		
-		x = 170+self.x_displacement
-
-		self.rpm -= self.torque
+			self.rpm -= self.torque
 
 		self.rpmp = (206/self.rpmmax)*self.rpm + 117
 
 	def gear_up(self):
 		if(self.gear < 5):
-			rpm_ideal = 3500 
+			rpm_ideal = 3500
 			diferenca = abs(self.rpm - rpm_ideal)
 		
 			if not(self.gear == 0):
@@ -173,79 +157,6 @@ class player_car:
 		self.speed = 0
 		return 0
 
-
-class player2_car:
-	def __init__(self,roda,chassi):
-		self.roda = roda
-		self.chassi = chassi
-		self.rpm = 0
-		self.gear = 0
-		self.speed = 0
-		self.size = chassi.get_size()
-		self.counter = 0
-		self.x_displacement = 0
-
-	def speeder(self):
-		self.gear_ratios = [0,0.75,1,1.5,1.9,2.77]
-		if(self.gear == 0 and self.speed > 0):
-			self.speed -= 0.01
-		elif(self.speed < 0):
-			self.speed = 0
-		else:
-			self.speed = (self.rpm*self.gear_ratios[self.gear])/100	
-		
-		return self.speed
-
-	def gas_pedal(self,espaco,brake = False): 
-		if (self.rpm > 4000):
-			self.rpm = 4000
-		if (self.rpm < 0):
-			self.rpm = 0
-		
-		if self.gear == 0: 
-			torque = 5
-			self.rpm -= 5
-		else:
-			torque = 25/abs(self.gear)
-		
-		if espaco and not brake:
-			self.rpm += torque
-		elif self.rpm > 0:
-			self.rpm -= torque
-
-	def draw(self,display):
-		x_displacement = 0
-		self.counter += 1
-		if self.counter == 1:
-			self.previous_speed = self.speed
-		if self.counter == 2:
-			self.counter = 0
-			self.x_displacement = (self.speed-self.previous_speed)*400
-			
-		if self.x_displacement < 0:
-			self.x_displacement = 0
-		
-		x = 170+self.x_displacement
-		y = 250
-
-		if(self.speed > 0):
-			self.roda = rot_center(self.roda, -30)
-		display.blit(self.chassi,(x,y))
-		display.blit(self.roda,(x+32,y+84))
-		display.blit(self.roda,(x+173,y+84))
-		Display.blit(velocimetro, (0, 0))
-		TextoT(display,'marcha', (30,18), branco, 20)
-		TextoT(display,self.gear, (40,35), branco, 60)
-		TextoT(display,'velocidade', (123,18), branco, 20)
-		TextoT(display,int(self.speed), (130,35), branco, 60)
-		return x + self.size[0]
-	def restart(self):
-		self.rpm = 0
-		self.gear = 0
-		self.speed = 0
-		return 0
-
-
 	def foward(self,display, vel):
 		y = 380
 		display.blit(self.roda,(self.x+32,y+84))
@@ -253,26 +164,19 @@ class player2_car:
 		display.blit(self.chassi,(self.x,y))
 		self.x += vel
 
-
 class other_car: 
-	def __init__(self,roda,chassi,lista_dificuldades): 
+	def __init__(self,roda,chassi, curva_caracteristica= 0):
 		self.roda = roda
 		self.chassi = chassi
 		self.speed = 0
 		self.pos = (170,280)
-		self.curvas = lista_dificuldades
-		
-
-		#Curva característica é uma lista com os coeficientes da função de velocidade Ex: [0.2,6,-2] -> (0.2)*x^2 + 6*x + (-2)*x
-		#A lista de dificuldades é uma lista com curvas características Ex. [[0.2,6,2],[1.2,9,-7],[0.8,0,-1]]
-		#O nível é o nível de dificuldade que a curva representa
-
-
-	def draw(self,display,xi,vel,ticks,lvl):
+		self.curve = curva_caracteristica
+	
+	def draw(self,display,xi,vel,ticks):
 		x = xi
-		y = 250
+		y = 280
 		tempo = ticks/60
-		v_adv = (self.curvas[lvl-1][0] + tempo*self.curvas[lvl-1][1] + (tempo*self.curvas[lvl-1][2])**2 )   #(2 + (6*tempo)+ (0.2*tempo)**2)  #V=V0 + at²/2
+		v_adv = (2 + (6*tempo)+ (0.2*tempo)**2)  #V=V0 + at²/2
 		self.speed = v_adv
 		ticks+=1
 		
@@ -348,7 +252,7 @@ rpmv = pygame.image.load(r'.\Sprites\velocimetro_back_red.png')
 rpmc = pygame.image.load(r'.\Sprites\velocimetro_background.png')
 ponteiro = pygame.image.load(r'.\Sprites\velocimetro_bar.png')
 
-#----Planos de fundo
+#Planos de fundo
 street = pygame.image.load(r'.\Sprites\Background - EP_Final.png')
 desert = pygame.image.load(r'.\Sprites\background_deserto.jpg')
 background = street
@@ -359,16 +263,23 @@ menu = menu_engrenagem
 tela_engrenagem = pygame.image.load(r'.\Sprites\menus\store_background_2.png')
 plano = tela_engrenagem    
 
-#-----Carros
+#Carros
 blue_jeep = pygame.image.load(r'.\Sprites\carro_azul.png')
 black_suv = pygame.image.load(r'.\Sprites\jip_preto.png')
 carro_vermelho = pygame.image.load(r'.\Sprites\Camaro_vermelho.png')
 
+fundo = pygame.image.load(r'.\Sprites\botões\fundo_botão.png')
+
 #-----Musicas
 
-pygame.mixer.music.load(r'top_gear.wav') #Central theme
+pygame.mixer.music.load(r'.\Sounds\top_gear.mp3') #Central theme
 
 #-------------------------------------------------------------#
+
+#-------------------------------------------------------------#
+
+avanco = botao_comum(r'.\Sprites\botões\botão_incial.png',r'.\Sprites\botões\botão_incial.png')
+up = botao_comum(r'.\Sprites\botões\botão_incial.png',r'.\Sprites\botões\botão_incial.png')
 
 #Menu
 play = botao_comum(r'.\Sprites\botões\set_azul\play_button.png',r'.\Sprites\botões\set_azul\play_button_blue_shadow.png')
@@ -393,6 +304,7 @@ tier_3 = botao_comum(r'.\Sprites\botões\set_rosa\tier_3.png',r'.\Sprites\botõe
 
 
 rodando = True
+inicio = True
 acelerando = False
 x_bg = 0
 x_bg1 = background_size[0]
@@ -400,17 +312,134 @@ tela = 0
 rola = 0
 tier = 0
 
-carroP =  player_car(roda,blue_jeep,[0,0.75,1,1.5,1.9,2.77],4000)
+carroP =  player_car(roda,blue_jeep)
 carroP.rpm = 0
 carroP.gear = 0
 
-carroadv = other_car(roda,blue_jeep,[[2,6,0.2],[2,9,0],[2,15,1]])
+carroadv = other_car(roda,blue_jeep)
 xi = carroadv.pos[0]
 
+coins = 0  
+passo = 0
 dis_total = dis = 38400 #Da linha até a origem 
 ticks = 0
 posicao = 414 #Da linha ao carro
+
 musica_on = False
+
+while inicio:
+
+	mouse = pygame.mouse.get_pos()
+	mouse1 = pygame.mouse.get_pressed()
+
+	if passo >= 7:
+		Display.blit(menu,(0,0))
+
+	avanco.tela(Display, (display_width/2 - 151, display_heigh/2 - 47))
+	TextoT(Display, 'click', (106 + avanco.ix, 12 + avanco.iy), preto, 41)
+
+	if coins != 0:
+		TextoT(Display, 'coins: {0}'.format(coins), (76 + avanco.ix, 49 + avanco.iy), preto, 41)
+
+	if passo == 0 and coins >= 10:
+		Display = pygame.display.set_mode((604,93))
+		up.tela(Display,(303,0))
+		TextoT(Display, 'Big screen', (61 + up.ix, 12 + up.iy), preto, 41)
+		TextoT(Display, '10 coins', (84 + up.ix, 49 + up.iy), preto, 41)
+		passo = 1
+
+	elif coins >= 10 and passo == 1:
+		up.tela(Display,(303,0))
+		TextoT(Display, 'Big screen', (61 + up.ix, 12 + up.iy), preto, 41)
+		TextoT(Display, '10 coins', (84 + up.ix, 49 + up.iy), preto, 41)
+
+	elif coins >= 20 and passo == 2:
+		up.tela(Display,(display_width/2 - 151,590))
+		TextoT(Display, 'Progress bar', (36 + up.ix, 12 + up.iy), preto, 41)
+		TextoT(Display, '20 coins', (79 + up.ix, 49 + up.iy), preto, 41)
+
+	elif coins >= 5 and passo == 3:
+		up.tela(Display,(display_width/2 - 151,500))
+		TextoT(Display, 'Play button', (46 + up.ix, 12 + up.iy), preto, 41)
+		TextoT(Display, '5 coins', (89 + up.ix, 49 + up.iy), preto, 41)
+
+	elif coins >= 5 and passo == 4:
+		up.tela(Display,(300, 600))
+		TextoT(Display, 'Settings button', (10 + up.ix, 12 + up.iy), preto, 41)
+		TextoT(Display, '5 coins', (89 + up.ix, 49 + up.iy), preto, 41)
+
+	elif coins >= 5 and passo == 5:
+		up.tela(Display,(690, 600))
+		TextoT(Display, 'Upgrade button', (15 + up.ix, 12 + up.iy), preto, 41)
+		TextoT(Display, '5 coins', (89 + up.ix, 49 + up.iy), preto, 41)
+
+	elif coins >= 5 and passo == 6:
+		up.tela(Display, (display_width/2 - 151, 0))
+		TextoT(Display, 'Menu screen', (45 + up.ix, 12 + up.iy), preto, 41)
+		TextoT(Display, '5 coins', (89 + up.ix, 49 + up.iy), preto, 41)		
+
+	elif coins >= 25 and passo == 7:
+		up.tela(Display, (display_width/2 - 151, display_heigh/2 - 47))
+		TextoT(Display, 'Buttons work', (45 + up.ix, 12 + up.iy), preto, 41)
+		TextoT(Display, '25 coins', (80 + up.ix, 49 + up.iy), preto, 41)			
+
+	if passo >= 4:
+		play.tela(Display, (display_width/2 - 151,500))
+
+	if passo >= 5:
+		opçoes.tela(Display, (300, 600))
+
+	if passo >= 6:
+		upgrade.tela(Display, (690, 600))
+
+	for event in pygame.event.get():
+		if event.type == pygame.QUIT:
+			inicio = False
+			rodando = False
+		if avanco.pressionadoE(mouse, mouse1):
+			coins += 1
+
+		if passo != 0:
+			if up.pressionadoE(mouse, mouse1):
+				if passo == 1:
+					display_width = 1280
+					display_heigh = 720
+					Display = pygame.display.set_mode((display_width ,display_heigh))
+					passo = 2
+					coins -= 10
+
+				elif passo == 2:
+					Display.blit(fundo, (display_width/2 - 151,590,))
+					passo = 3
+					coins -= 20
+
+				elif passo == 3:
+					Display.blit(fundo, (display_width/2 - 151,500))
+					passo = 4
+					coins -= 5
+
+				elif passo == 4:
+					Display.blit(fundo, (300, 600))
+					passo = 5
+					coins -= 5
+
+				elif passo == 5:
+					Display.blit(fundo, (690, 600))
+					passo = 6
+					coins -= 5
+
+				elif passo == 6:
+					Display.blit(fundo, (display_width/2 - 151, 0))
+					passo = 7
+					coins -= 5
+
+				elif passo == 7:
+					coins -= 25
+					inicio = False
+
+
+	pygame.display.update()
+	clock.tick(60)
 
 while rodando:
 	mouse = pygame.mouse.get_pos()
@@ -421,7 +450,7 @@ while rodando:
 			pygame.mixer.music.play(-1)
 			musica_on = True
 		Display.blit(menu,(0,0))
-		play.tela(Display, (489, 500))
+		play.tela(Display, (display_width/2 - 151, 500))
 		opçoes.tela(Display, (300, 600))
 		upgrade.tela(Display, (690, 600))
 
@@ -497,7 +526,7 @@ while rodando:
 						acelerando = False
 
 			carroP.gas_pedal(acelerando)
-			xi,ticks = carroadv.draw(Display,xi,vel,ticks,2)
+			xi,ticks = carroadv.draw(Display,xi,vel,ticks)
 			posicao = carroP.draw(Display)
 			
 			if dis < posicao:
