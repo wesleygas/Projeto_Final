@@ -1,0 +1,11 @@
+Carro(sprite): [        gear ratios       ] / max rpm / torque multiplier || Curva do inimigo
+
+Carro azul   : [0,0.75,1.00,1.50,1.90,2.77] / 4000    /50		  || [[2,6,0.2],[ ],[ ]]
+
+Black SUV    : [0,0.81,0.96,1.31,1.90,3.16] / 4000    /60		  || [[ ],[ ],[ ]]
+
+Outro carro  : [0,0.85,1.16,1.55,2.37,4.06] / 4500    /60		  || [[ ],[ ],[ ]]
+
+
+
+Lógica json: Guardar as tiers e os upgrades ativos como booleanas, assim como o número de moedas, RECORDES DE TEMPO, curvas de velocidade
