@@ -57,7 +57,7 @@ def TextoT(display, linha, Loc, cor, tam):
 #Classes ----------------.------------------ Classes
 
 class player_car:
-	def __init__(self,roda,chassi):
+	def __init__(self,roda,chassi, gear_ratios, rpmmax):
 		self.roda = roda
 		self.chassi = chassi
 		self.rpm = 0
@@ -67,10 +67,10 @@ class player_car:
 		self.counter = 0
 		self.x_displacement = 0
 		self.rpmap = 1
-		self.rpmmax = 4000
+		self.rpmmax = rpmmax
+		self.gear_ratios = gear_ratios
 
 	def speeder(self):
-		self.gear_ratios = [0,0.75,1,1.5,1.9,2.77]
 		if(self.gear == 0 and self.speed > 0):
 			self.speed -= 0.1
 		elif(self.speed < 0):
@@ -165,18 +165,23 @@ class player_car:
 		self.x += vel
 
 class other_car: 
-	def __init__(self,roda,chassi, curva_caracteristica= 0):
+	def __init__(self,roda,chassi,lista_dificuldades): 
 		self.roda = roda
 		self.chassi = chassi
 		self.speed = 0
 		self.pos = (170,280)
-		self.curve = curva_caracteristica
+		self.curvas = lista_dificuldades
+		
 
-	def draw(self,display,xi,vel,ticks):
+		#Curva característica é uma lista com os coeficientes da função de velocidade Ex: [0.2,6,-2] -> (0.2)*x^2 + 6*x + (-2)*x
+		#A lista de dificuldades é uma lista com curvas características Ex. [[0.2,6,2],[1.2,9,-7],[0.8,0,-1]]
+		#O nível é o nível de dificuldade que a curva representa
+
+	def draw(self,display,xi,vel,ticks,lvl):
 		x = xi
 		y = 280
 		tempo = ticks/60
-		v_adv = (2 + (6*tempo)+ (0.2*tempo)**2)  #V=V0 + at²/2
+		v_adv = (self.curvas[lvl-1][0] + tempo*self.curvas[lvl-1][1] + (tempo*self.curvas[lvl-1][2])**2 )   #(2 + (6*tempo)+ (0.2*tempo)**2)  #V=V0 + at²/2
 		self.speed = v_adv
 		ticks+=1
 		
@@ -245,7 +250,7 @@ roda = pygame.image.load(r'.\Sprites\Roda011.png')
 velocimetro = pygame.image.load(r'.\Sprites\velocimetro.png')
 chegada = pygame.image.load(r'.\Sprites\chegada.png')
 menu = pygame.image.load(r'.\Sprites\main_menu.png')
-you_lose = pygame.image.load(r'.\Sprites\you_lose_2.png')
+
 simples = pygame.image.load(r'.\Sprites\tela_simples.png')
 simples = pygame.transform.scale(simples,(1280,720))
 rpmv = pygame.image.load(r'.\Sprites\velocimetro_back_red.png')
@@ -272,6 +277,10 @@ blue_jeep = pygame.image.load(r'.\Sprites\carro_azul.png')
 black_suv = pygame.image.load(r'.\Sprites\jip_preto.png')
 blue_rally_jeep = pygame.image.load(r'.\Sprites\blue_rally_jeep.png')
 carro_vermelho = pygame.image.load(r'.\Sprites\Camaro_vermelho.png')
+
+#-----Musicas
+
+pygame.mixer.music.load(r'top_gear.mp3') #Central theme
 
 
 fundo = pygame.image.load(r'.\Sprites\botões\fundo_botão.png')
@@ -312,11 +321,11 @@ tela = 0
 rola = 0
 tier = 0
 
-carroP =  player_car(roda,blue_rally_jeep)
+carroP =  player_car(roda,blue_jeep,[0,0.75,1,1.5,1.9,2.77],4000)
 carroP.rpm = 0
 carroP.gear = 0
 
-carroadv = other_car(roda,blue_jeep)
+carroadv = other_car(roda,blue_jeep,[[2,6,0.2],[2,9,0],[2,15,1]])
 xi = carroadv.pos[0]
 
 coins = 0  
@@ -324,6 +333,7 @@ passo = 0
 dis_total = dis = 38400 #Da linha até a origem 
 ticks = 0
 posicao = 414 #Da linha ao carro
+musica_on = False
 
 while inicio:
 
@@ -449,6 +459,9 @@ while rodando:
 	mouse1 = pygame.mouse.get_pressed()
 
 	if tela == 0:
+		if not musica_on:
+			pygame.mixer.music.play(-1)
+			musica_on = True
 		Display.blit(menu,(0,0))
 		play.tela(Display, (display_width/2 - 151, 500))
 		opçoes.tela(Display, (300, 600))
@@ -484,6 +497,7 @@ while rodando:
 				tela = 2
 
 	if tela == 1:
+		pygame.mixer.music.stop()
 		if inicio_corrida != 0:
 
 
@@ -525,7 +539,7 @@ while rodando:
 						acelerando = False
 
 			carroP.gas_pedal(acelerando)
-			xi,ticks = carroadv.draw(Display,xi,vel,ticks)
+			xi,ticks = carroadv.draw(Display,xi,vel,ticks,2)
 			posicao = carroP.draw(Display)
 			
 			if dis < posicao:
@@ -572,6 +586,9 @@ while rodando:
 
 
 	if tela == 2:
+		if not musica_on:
+			pygame.mixer.music.play(-1)
+			musica_on = True
 
 		Display.blit(plano, (0,0))
 
