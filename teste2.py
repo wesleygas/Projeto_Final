@@ -245,7 +245,6 @@ class botao_comum:
 
 #Importando sprites-------------------------Importando Sprites
 
-roda = pygame.image.load(r'.\Sprites\Roda011.png')
 
 velocimetro = pygame.image.load(r'.\Sprites\velocimetro.png')
 chegada = pygame.image.load(r'.\Sprites\chegada.png')
@@ -256,6 +255,11 @@ simples = pygame.transform.scale(simples,(1280,720))
 rpmv = pygame.image.load(r'.\Sprites\velocimetro_back_red.png')
 rpmc = pygame.image.load(r'.\Sprites\velocimetro_background.png')
 ponteiro = pygame.image.load(r'.\Sprites\velocimetro_bar.png')
+
+#Rodas
+roda_thunder = pygame.image.load(r'.\Sprites\Roda011.png')
+roda_thunder = pygame.image.load(r'.\Sprites\Roda_x.png')
+roda = roda_thunder
 
 #Ganhar ou perder
 you_lose = pygame.image.load(r'.\Sprites\you_lose_2.png')
@@ -268,7 +272,7 @@ background = street
 background_size = background.get_size()
 menutosco = pygame.image.load(r'.\Sprites\main_menu.png')
 menu_engrenagem = pygame.image.load(r'.\Sprites\menus\menu principal\LogoEvo2.png')
-menu = menutosco
+menu = menu_engrenagem
 tela_engrenagem = pygame.image.load(r'.\Sprites\menus\store_background_2.png')
 plano = tela_engrenagem    
 
@@ -297,7 +301,7 @@ upgrade = botao_comum(r'.\Sprites\botões\set_azul\upgrade_button.png',r'.\Sprit
 voltar = botao_comum(r'.\Sprites\botões\set_azul\back_button.png',r'.\Sprites\botões\set_azul\back_button.png')
 
 #Tier 1
-tier_1 = botao_comum(r'.\Sprites\botões\set_azul\tier_1.png',r'.\Sprites\botões\set_azul\tier_1.png')
+tier_1 = botao_comum(r'.\Sprites\botões\set_azul\tier_1.png',r'.\Sprites\botões\set_azul\tier_1_blue_shadow.png')
 blue_jeepb = botao_comum(r'.\Sprites\botões\set_azul\blue_jeep.png',r'.\Sprites\botões\set_azul\blue_jeep.png')
 black_suvb = botao_comum(r'.\Sprites\botões\set_azul\black_suv.png',r'.\Sprites\botões\set_azul\black_suv.png')
 streetb = botao_comum(r'.\Sprites\botões\set_azul\street.png',r'.\Sprites\botões\set_azul\street.png')
@@ -313,7 +317,7 @@ tier_3 = botao_comum(r'.\Sprites\botões\set_rosa\tier_3.png',r'.\Sprites\botõe
 
 
 rodando = True
-inicio = False
+inicio = True
 acelerando = False
 x_bg = 0
 x_bg1 = background_size[0]
@@ -414,7 +418,7 @@ while inicio:
 					display_width = 1280
 					display_heigh = 720
 					Display = pygame.display.set_mode((display_width ,display_heigh))
-					passo = 2
+					passo = 3
 					coins -= 10
 
 				elif passo == 2:
@@ -559,6 +563,12 @@ while rodando:
 						Display.blit(you_lose, (xmensagem,ymensagem))
 						ymensagem -= 5
 
+						for event in pygame.event.get():
+							if event.type == pygame.QUIT:
+								inicio = False
+								rodando = False
+								mensagem = 0
+
 						pygame.display.update()
 						clock.tick(60)
 
@@ -577,6 +587,12 @@ while rodando:
 						carroP.foward(Display,vel)
 						Display.blit(you_win, (xmensagem,ymensagem))
 						ymensagem -= 5
+
+						for event in pygame.event.get():
+							if event.type == pygame.QUIT:
+								inicio = False
+								rodando = False
+								mensagem = 0
 
 						pygame.display.update()
 						clock.tick(60)
@@ -598,6 +614,9 @@ while rodando:
 			tier_2.tela(Display, (443, 315))
 			tier_3.tela(Display, (443, 506))
 			voltar.tela(Display, (950,600))
+
+			if tier_1.em_cima(mouse):
+				tier_1.sombra(Display)
 
 
 			for event in pygame.event.get():
