@@ -1,0 +1,25 @@
+[
+	{
+		
+		"tier": 0,
+		"carroP": 0,
+		"backgrounds":0,
+		"coins": 0,
+		"recordes": [0,0,0] 
+
+	},
+	
+	{
+		"inicio": 1,
+		"musica_on": 0
+
+	},
+	{
+		"carros_player":{"carro_azul":[[0,0.75,1,1.5,1.9,2.77],4000,50],
+			"black_suv":[[0,0.81,0.96,1.31,1.90,3.16],4000,60],
+						"outro_carro":[[0,0.85,1.16,1.55,2.37,4.06],4500,60]},
+		"carros_adversarios":{"carro_azul":[[2,6,0.2],[2,9,0],[2,15,1]]}
+	}
+
+
+]
