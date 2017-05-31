@@ -171,9 +171,20 @@ class other_car:
 		self.chassi = chassi
 		self.speed = 0
 		self.pos = (170,280)
+<<<<<<< HEAD
 		self.curve = curva_caracteristica
 	
 	def draw(self,display,xi,vel,ticks):
+=======
+		self.curvas = lista_dificuldades
+		
+
+		#Curva característica é uma lista com os coeficientes da função de velocidade Ex: [0.2,6,-2] -> (0.2)*x^2 + 6*x + (-2)*x
+		#A lista de dificuldades é uma lista com curvas características Ex. [[0.2,6,2],[1.2,9,-7],[0.8,0,-1]]
+		#O nível é o nível de dificuldade que a curva representa
+
+	def draw(self,display,xi,vel,ticks,lvl):
+>>>>>>> origin/master
 		x = xi
 		y = 280
 		tempo = ticks/60
@@ -246,13 +257,20 @@ roda = pygame.image.load(r'.\Sprites\Roda011.png')
 velocimetro = pygame.image.load(r'.\Sprites\velocimetro.png')
 chegada = pygame.image.load(r'.\Sprites\chegada.png')
 menu = pygame.image.load(r'.\Sprites\main_menu.png')
-you_lose = pygame.image.load(r'.\Sprites\you_lose.png')
+
 simples = pygame.image.load(r'.\Sprites\tela_simples.png')
 simples = pygame.transform.scale(simples,(1280,720))
 rpmv = pygame.image.load(r'.\Sprites\velocimetro_back_red.png')
 rpmc = pygame.image.load(r'.\Sprites\velocimetro_background.png')
 ponteiro = pygame.image.load(r'.\Sprites\velocimetro_bar.png')
 
+<<<<<<< HEAD
+=======
+#Ganhar ou perder
+you_lose = pygame.image.load(r'.\Sprites\you_lose_2.png')
+you_win = pygame.image.load(r'.\Sprites\you_win_2.png')
+
+>>>>>>> origin/master
 #Planos de fundo
 street = pygame.image.load(r'.\Sprites\Background - EP_Final.png')
 desert = pygame.image.load(r'.\Sprites\background_deserto.jpg')
@@ -260,25 +278,32 @@ background = street
 background_size = background.get_size()
 menutosco = pygame.image.load(r'.\Sprites\main_menu.png')
 menu_engrenagem = pygame.image.load(r'.\Sprites\menus\menu principal\LogoEvo2.png')
-menu = menu_engrenagem
+menu = menutosco
 tela_engrenagem = pygame.image.load(r'.\Sprites\menus\store_background_2.png')
 plano = tela_engrenagem    
 
 #Carros
 blue_jeep = pygame.image.load(r'.\Sprites\carro_azul.png')
 black_suv = pygame.image.load(r'.\Sprites\jip_preto.png')
+blue_rally_jeep = pygame.image.load(r'.\Sprites\blue_rally_jeep.png')
 carro_vermelho = pygame.image.load(r'.\Sprites\Camaro_vermelho.png')
 
 fundo = pygame.image.load(r'.\Sprites\botões\fundo_botão.png')
 
 #-----Musicas
 
-pygame.mixer.music.load(r'.\Sounds\top_gear.mp3') #Central theme
+pygame.mixer.music.load(r'top_gear.mp3') #Central theme
+
+
+fundo = pygame.image.load(r'.\Sprites\botões\fundo_botão.png')
 
 #-------------------------------------------------------------#
 
+<<<<<<< HEAD
 #-------------------------------------------------------------#
 
+=======
+>>>>>>> origin/master
 avanco = botao_comum(r'.\Sprites\botões\botão_incial.png',r'.\Sprites\botões\botão_incial.png')
 up = botao_comum(r'.\Sprites\botões\botão_incial.png',r'.\Sprites\botões\botão_incial.png')
 
@@ -305,7 +330,11 @@ tier_3 = botao_comum(r'.\Sprites\botões\set_rosa\tier_3.png',r'.\Sprites\botõe
 
 
 rodando = True
+<<<<<<< HEAD
 inicio = True
+=======
+inicio = False
+>>>>>>> origin/master
 acelerando = False
 x_bg = 0
 x_bg1 = background_size[0]
@@ -397,6 +426,10 @@ while inicio:
 		if event.type == pygame.QUIT:
 			inicio = False
 			rodando = False
+<<<<<<< HEAD
+=======
+
+>>>>>>> origin/master
 		if avanco.pressionadoE(mouse, mouse1):
 			coins += 1
 
@@ -442,6 +475,13 @@ while inicio:
 	pygame.display.update()
 	clock.tick(60)
 
+<<<<<<< HEAD
+=======
+display_width = 1280
+display_heigh = 720
+Display = pygame.display.set_mode((display_width ,display_heigh))
+
+>>>>>>> origin/master
 while rodando:
 	mouse = pygame.mouse.get_pos()
 	mouse1 = pygame.mouse.get_pressed()
@@ -486,8 +526,8 @@ while rodando:
 
 	if tela == 1:
 		pygame.mixer.music.stop()
-		musica_on = False
 		if inicio_corrida != 0:
+
 
 			for event in pygame.event.get():
 				if event.type == pygame.QUIT:
@@ -553,10 +593,31 @@ while rodando:
 						if ymensagem < 0:
 							mensagem = 0
 
+				else:
+
+					xmensagem = 500
+					ymensagem = 730
+					mensagem = 1
+
+					while mensagem != 0:
+
+						Display.blit(background, (0,0))
+						carroP.foward(Display,vel)
+						Display.blit(you_win, (xmensagem,ymensagem))
+						ymensagem -= 5
+
+						pygame.display.update()
+						clock.tick(60)
+
+						if ymensagem < 0:
+							mensagem = 0
+
+
 	if tela == 2:
 		if not musica_on:
 			pygame.mixer.music.play(-1)
 			musica_on = True
+
 		Display.blit(plano, (0,0))
 
 		if tier == 0:
