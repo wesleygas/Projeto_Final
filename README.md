@@ -2,6 +2,9 @@
 Dragster UpgradeTotal
 
 
+	Para começar um novo jogo, clique no botão no canto superior esquerdo no menu principal.
+
+
 
 
 - Problemas e soluções para um jogo local split-screen:
