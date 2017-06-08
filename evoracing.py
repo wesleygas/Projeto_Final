@@ -4,15 +4,11 @@ import json
 from random import choice
 
 
-with open('data.json') as arquivo: #Abre o save 
+with open('data.json') as arquivo:	#Abre o save 
 	data = json.load(arquivo)
 
-pygame.init()
+pygame.init()	#Inicia o pygame
 
-#Todo-list:
-#	- Implementar uma função(matemática) para mudar o RPM do carro
-#de modo em que ele tenha as curvas de aceleração
-#	- Transformar as funções em classe
 #Cores------------------------------------------Cores
 preto = (0,0,0)
 branco = (255,255,255)
@@ -22,17 +18,16 @@ verde = (0,0,255)
 amarelo = (255,0,255)
 
 #iniciando display-------------------------iniciando display
-display_width = 302
+display_width = 302	#dimensões do display
 display_heigh = 93
 
-Display = pygame.display.set_mode((display_width,display_heigh)) #Tamanho da janela
-pygame.display.set_caption('Evoracing') #Nome da janela
-clock = pygame.time.Clock()
+Display = pygame.display.set_mode((display_width,display_heigh)) #Criando display
+pygame.display.set_caption('Evoracing') #Nome do display
+clock = pygame.time.Clock() #Criando contador
 
 #Funções úteis------------------------------Funções úteis
 
-def rot_center(image, angle):
-	"""rotate an image while keeping its center and size"""
+def rot_center(image, angle):	#Função de rotação de imagem
 	orig_rect = image.get_rect()
 	rot_image = pygame.transform.rotate(image, angle)
 	rot_rect = orig_rect.copy()
@@ -40,7 +35,7 @@ def rot_center(image, angle):
 	rot_image = rot_image.subsurface(rot_rect).copy()
 	return rot_image	
 
-def mov_aparente(Display,background, vel, x, xl, chegada, dis):
+def mov_aparente(Display,background, vel, x, xl, chegada, dis): #Função de movimento de background
 	background1 = background
 	background_size = background.get_size()
 	x -= vel
@@ -57,14 +52,14 @@ def mov_aparente(Display,background, vel, x, xl, chegada, dis):
 		xl = background_size[0]
 	return x,xl,dis
 
-def TextoT(display, linha, Loc, cor, tam):
+def TextoT(display, linha, Loc, cor, tam): #Função de printar texto na tela
 	fonte = pygame.font.Font("DS-DIGI.ttf",tam)
 	texto = fonte.render(str(linha), True, cor)
 	display.blit(texto, Loc)
 
 #Classes ----------------.------------------ Classes
 
-class player_car:
+class player_car:	#Classe jogador
 	def __init__(self,roda,chassi, car_data):
 		self.roda = roda
 		self.chassi = chassi
@@ -81,7 +76,7 @@ class player_car:
 		self.rpm_ideal_lista = [0, self.rpmmax-1000, self.rpmmax-900, self.rpmmax-800, self.rpmmax-500, self.rpmmax]
 		self.rpm_idealvisor = 0
 
-	def speeder(self):
+	def speeder(self): #Função velocidade do carro
 		if(self.gear == 0 and self.speed > 0):
 			self.speed -= 0.1
 		elif(self.speed < 0):
@@ -91,7 +86,7 @@ class player_car:
 		
 		return self.speed
 
-	def gas_pedal(self,espaco): 
+	def gas_pedal(self,espaco):	#Função aceleração
 
 		if (self.rpm > self.rpmmax):
 			self.rpm = self.rpmmax
@@ -115,7 +110,7 @@ class player_car:
 		else:
 			self.rpm_idealvisor = -500
 
-	def gear_up(self):
+	def gear_up(self):	#Função aumentar a marcha
 		if(self.gear < 5):
 			self.rpm_ideal = self.rpm_ideal_lista[self.gear]
 			diferenca = abs(self.rpm - self.rpm_ideal)
@@ -134,7 +129,7 @@ class player_car:
 			self.rpm_ideal = self.rpm_ideal_lista[self.gear]
 			
 
-	def gear_down(self):
+	def gear_down(self):	#Fu~ção diminuir a marcha
 		if(self.gear > 0):
 			self.torque = 75/abs(self.gear)
 			if self.gear > 1:
@@ -142,7 +137,7 @@ class player_car:
 			self.gear -= 1
 			self.rpm_ideal = self.rpm_ideal_lista[self.gear]
 
-	def draw(self,display,x_displacement = 0):
+	def draw(self,display,x_displacement = 0):	#Função que blita o carrinho na tela
 		self.x = 170+x_displacement
 		y = 380
 
@@ -161,20 +156,20 @@ class player_car:
 		TextoT(display,int(self.speed), (340,35), branco, 60)
 		return self.x + self.size[0]
 
-	def drawStop(self, display):
+	def drawStop(self, display): #Blita o carrinho parado
 		x = 170
 		y = 380
 		display.blit(self.chassi,(x,y))
 		display.blit(self.roda,(x+32,y+84))
 		display.blit(self.roda,(x+173,y+84))
 
-	def restart(self):
+	def restart(self):	#Zera todos os parametros do carrinho pra proxima corrida
 		self.rpm = 0
 		self.gear = 0
 		self.speed = 0
 		return 0
 
-	def foward(self,display, vel):
+	def foward(self,display, vel):	#Faz com que o carrinho va em frente e saia da tela
 		y = 380
 		display.blit(self.roda,(self.x+32,y+84))
 		display.blit(self.roda,(self.x+173,y+84))
@@ -219,7 +214,7 @@ class other_car:
 		display.blit(self.roda,(x+32,y+84))
 		display.blit(self.roda,(x+173,y+84))
 
-class botao_comum:
+class botao_comum: #Classe botão
 	
 	def __init__(self, imag, shadow, bloqueio, cos):
 		self.ima = pygame.image.load(imag)
@@ -229,7 +224,7 @@ class botao_comum:
 		self.cos = cos
 
 
-	def tela(self, display, pos, mpos):
+	def tela(self, display, pos, mpos): #Blita o botão na tela
 
 		display.blit(self.ima, (pos[0], pos[1]))		
 		self.ix = pos[0]
@@ -246,14 +241,14 @@ class botao_comum:
 		elif self.em_cima(mpos):
 			display.blit(self.shadow, (self.ix,self.iy))
 
-	def pressionadoE(self, mpos, mpres):
+	def pressionadoE(self, mpos, mpres): #Verifica se o botão esta sendo pressionado 
 
 		if self.ix < mpos[0] < self.fx and self.iy < mpos[1] < self.fy and mpres[0] == 1:
 			return True
 		else:
 			return False
 
-	def em_cima(self, mpos):
+	def em_cima(self, mpos):	#Verifica se o mouse esta em cima do botão
 		if self.ix < mpos[0] < self.fx and self.iy < mpos[1] < self.fy:
 			return True
 		else:
@@ -261,12 +256,12 @@ class botao_comum:
 
 #Importando sprites-------------------------Importando Sprites
 
-velocimetro = pygame.image.load(r'.\Sprites\velocimetro.png')
-chegada = pygame.image.load(r'.\Sprites\chegada.png')
-menu = pygame.image.load(r'.\Sprites\main_menu.png')
 
+chegada = pygame.image.load(r'.\Sprites\chegada.png')
 evocoins = pygame.image.load(r'.\Sprites\New Piskel (3).png')
 
+#Velocimetro
+velocimetro = pygame.image.load(r'.\Sprites\velocimetro.png')
 rpmv = pygame.image.load(r'.\Sprites\velocimetro_back_red.png')
 rpmc = pygame.image.load(r'.\Sprites\velocimetro_background.png')
 ponteiro = pygame.image.load(r'.\Sprites\velocimetro_bar.png')
@@ -287,8 +282,6 @@ street = pygame.image.load(r'.\Sprites\Background - EP_Final.png')
 desert = pygame.image.load(r'.\Sprites\background_deserto.jpg')
 nuvens = pygame.image.load(r'.\Sprites\Background - heavens_cove.png')
 lunar = pygame.image.load(r'.\Sprites\Background_snow_point.png')
-
-neon = pygame.image.load(r'.\Sprites\Background - heavens_cove.png')
 background = street
 background_size = background.get_size()
 
@@ -340,8 +333,6 @@ fundo = pygame.image.load(r'.\Sprites\botões\fundo_botão.png')
 
 #-------------------------Botões do menu---------------------------#
 
-
-
 avanco = botao_comum(r'.\Sprites\botões\botão_incial.png',r'.\Sprites\botões\botão_incial.png', 1, 0)
 up = botao_comum(r'.\Sprites\botões\botão_incial.png',r'.\Sprites\botões\botão_incial.png', 1, 0)
 
@@ -354,7 +345,6 @@ continueb = botao_comum(r'.\Sprites\botões\set_transparente\continue_button.png
 voloffb = botao_comum(r'.\Sprites\botões\volume-off.png',r'.\Sprites\botões\volume-off.png',1, 0)
 voloonb = botao_comum(r'.\Sprites\botões\volume-512.png',r'.\Sprites\botões\volume-512.png',1, 0)
 recomecarb = botao_comum(r'.\Sprites\botões\Reset-Button.png',r'.\Sprites\botões\Reset-Button.png',1, 0)
-
 
 #Tiers
 tier_1 = botao_comum(r'.\Sprites\botões\set_azul\tier_1.png',r'.\Sprites\botões\set_azul\tier_1_blue_shadow.png',0, 20)
@@ -380,8 +370,7 @@ desertb = botao_comum(r'.\Sprites\botões\set_azul\desert.png',r'.\Sprites\botõ
 nuvensb = botao_comum(r'.\Sprites\botões\set_verde\lunar_green.png',r'.\Sprites\botões\set_verde\lunar_green_shadow.png',0, 40)
 lunarb = botao_comum(r'.\Sprites\botões\set_verde\clouds.png',r'.\Sprites\botões\set_verde\clouds_shadow.png',0, 60)
 
-#-------------------------------------------------------------#
-
+#--------------------Parametros iniciais------------------------------#
 
 rodando = True
 inicio = bool(data[1]["inicio"])
@@ -405,19 +394,22 @@ posicao = 414 #Da linha ao carro
 musica_aux = False #Variável auxiliar para a escolha das músicas
 musica_on = bool(data[1]["musica_on"]) #Escolha do player se ele quer música ou não
 
-while inicio:
 
-	mouse = pygame.mouse.get_pos()
+while inicio: #Loop primeira parte do jogo
+
+	mouse = pygame.mouse.get_pos() #Pega os dados do mouse
 	mouse1 = pygame.mouse.get_pressed()
 
-	if passo >= 5:
+	if passo >= 5: #Blita o menu
 		Display.blit(menu,(0,0))
 
-	avanco.tela(Display, (display_width/2 - 151, display_heigh/2 - 47), mouse)
+	avanco.tela(Display, (display_width/2 - 151, display_heigh/2 - 47), mouse) #Blita o menu de click
 	TextoT(Display, 'click', (106 + avanco.ix, 12 + avanco.iy), preto, 41)
 
-	if coins != 0:
+	if coins != 0:	#Blita a quantidade de moedas possuidas
 		TextoT(Display, 'coins: {0}'.format(coins), (76 + avanco.ix, 49 + avanco.iy), preto, 41)
+
+#--------------------Sequencia de botões a serem blitados------------------------------#
 
 	if passo == 0 and coins >= 10:
 		Display = pygame.display.set_mode((604,93))
@@ -451,11 +443,15 @@ while inicio:
 		TextoT(Display, 'Buttons work', (45 + up.ix, 12 + up.iy), preto, 41)
 		TextoT(Display, '25 coins', (80 + up.ix, 49 + up.iy), preto, 41)			
 
+#--------------------Ações a serem realizados pelos botões------------------------------#
+
 	if passo >= 3:
 		play.tela(Display, (display_width/2 - 151,500), mouse)
 
 	if passo >= 4:
 		upgrade.tela(Display, (display_width/2 - 151, 600), mouse)
+
+#--------------------Interações do jogador------------------------------#
 
 	for event in pygame.event.get():
 		if event.type == pygame.QUIT:
@@ -497,7 +493,10 @@ while inicio:
 	pygame.display.update()
 	clock.tick(60)
 
-if(rodando):
+
+
+
+if(rodando):	#Quando o jogo é iniciado por um save carrega a tela maior
 	display_width = 1280
 	display_heigh = 720
 	Display = pygame.display.set_mode((display_width ,display_heigh))
@@ -505,9 +504,11 @@ if(rodando):
 	upgrade.block = 1
 
 
-while rodando:
+while rodando: #Jogo principal
 	mouse = pygame.mouse.get_pos()
 	mouse1 = pygame.mouse.get_pressed()
+
+#--------------------Menu------------------------------#
 
 	if tela == 0:
 		if not musica_aux:
@@ -522,6 +523,8 @@ while rodando:
 		Display.blit(evocoins, (1129,7))
 		TextoT(Display, coins, (1030, 11), branco, 41)
 		recomecarb.tela(Display, (131,0), mouse)
+
+#--------------------Interações com o jogador------------------------------#
 
 		for event in pygame.event.get():
 
@@ -555,6 +558,8 @@ while rodando:
 				tela = 2
 				tier = 0
 
+#--------------------Corrida contagem regressiva---------------------------#
+
 	if tela == 1:
 		
 		if inicio_corrida != 0:
@@ -574,6 +579,8 @@ while rodando:
 			TextoT(Display, "Espaco acelera", (550, 250), preto, 70)
 			TextoT(Display, "Setas: cima e baixo", (450, 350), preto, 70)
 			TextoT(Display, "para mudar a marcha", (450, 450), preto, 70)
+
+#--------------------Interações com o jogador------------------------------#
 
 			for event in pygame.event.get():
 				if event.type == pygame.QUIT:
@@ -618,11 +625,15 @@ while rodando:
 				if contagem < 0:
 					inicio_corrida = 0
 
+#--------------------Corrida em sí------------------------------#
+
 		else:
 
 			vel = carroP.speeder()
 			x_bg, x_bg1, dis = mov_aparente(Display,background,vel,x_bg,x_bg1,chegada,dis)
 			pauseb.tela(Display, (1085, 12), mouse)
+
+#--------------------Interações com o jogador------------------------------#
 
 			for event in pygame.event.get():
 				if event.type == pygame.QUIT:
@@ -673,7 +684,9 @@ while rodando:
 			carroP.gas_pedal(acelerando)
 			xi,ticks = carroadv.draw(Display,xi,vel,ticks,choice(range(3)))
 			posicao = carroP.draw(Display)
-			
+		
+#--------------------Veirifica quando a corrida acaba e quem ganhou------------------------------#
+
 			if dis < posicao:
 
 				tela = 0
@@ -710,7 +723,7 @@ while rodando:
 						pygame.display.update()
 						clock.tick(60)
 
-
+#--------------------Menu de upgrades------------------------------#
 
 	if tela == 2:
 		if not musica_aux:
@@ -724,10 +737,14 @@ while rodando:
 		TextoT(Display, coins, (1030, 11), branco, 41)
 		voltar.tela(Display, (950,600), mouse)
 
+#--------------------Escolha de tier------------------------------#
+
 		if tier == 0:
 
 			tier_1.tela(Display, (443, 124), mouse)
 			tier_2.tela(Display, (443, 315), mouse)
+
+#--------------------Interações com o jogador------------------------------#
 
 			for event in pygame.event.get():
 
@@ -753,6 +770,8 @@ while rodando:
 				if voltar.pressionadoE(mouse, mouse1):
 					tela = 0
 
+#--------------------Upgrades tier 1------------------------------#
+
 		elif tier == 1:
 
 			tier_1b.tela(Display, (display_width/2 - 151, 47), mouse)
@@ -764,6 +783,8 @@ while rodando:
 			blue_jeepb.tela(Display, (788,160), mouse)
 			roda_thunderb.tela(Display, (788,313), mouse)
 			desertb.tela(Display, (788,466), mouse)
+
+#--------------------Interações com o jogador------------------------------#
 
 			for event in pygame.event.get():
 
@@ -842,6 +863,8 @@ while rodando:
 						pauseb = botao_comum(r'.\Sprites\botões\set_azul\pause_button_blue.png',r'.\Sprites\botões\set_azul\pause_button_blue_shadow.png',1, 0)
 						continueb = botao_comum(r'.\Sprites\botões\set_azul\continue_button.png',r'.\Sprites\botões\set_azul\continue_button_shadow.png',1, 0)
 
+#--------------------IUpgrade tier 2------------------------------#
+
 		elif tier == 2:
 
 			tier_2b.tela(Display, (display_width/2 - 151, 47), mouse)
@@ -853,6 +876,8 @@ while rodando:
 			red_camarob.tela(Display, (788,160), mouse)
 			roda_bmwb.tela(Display, (788,313), mouse)
 			nuvensb.tela(Display, (788,466), mouse)
+
+#--------------------Interações com o jogador------------------------------#
 
 			for event in pygame.event.get():
 
@@ -936,6 +961,8 @@ while rodando:
 
 	pygame.display.update()
 	clock.tick(60)
+
+#--------------------Salvando estado atual------------------------------#
 data[0]["coins"] = coins 
 data[1]["inicio"] = int(inicio)
 data[1]["musica_on"] = int(musica_on)
@@ -943,5 +970,5 @@ data[1]["musica_on"] = int(musica_on)
 with open('data.json','w') as arquivo: #Guarda o save
 	json.dump(data,arquivo)
 
-pygame.quit()
+pygame.quit() #Encerra o pygame e salva o jogo
 quit()
